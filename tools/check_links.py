@@ -34,7 +34,7 @@ import urllib.request
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "catalog" / "catalog.csv"
 
-UA = "factory-index link checker (+https://github.com/Skeeter-spec/factory-index)"
+UA = "industrial-index link checker (+https://github.com/Skeeter-spec/industrial-index)"
 
 
 def reachable(url, timeout):

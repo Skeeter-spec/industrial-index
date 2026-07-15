@@ -1,8 +1,11 @@
-# Factory Index
+# Industrial Index
 
-A catalogued, verified, snapshot backed index of automation and factory technical documentation:
-microcontrollers, boards, PLCs, drives, protocols, switchgear, instrumentation, and the standards
-that govern them. Built in public by a field service engineer who has to find these documents anyway.
+A catalogued, verified, snapshot backed index of the technical documentation behind automation and
+industrial power: PLCs, drives, protocols, microcontrollers, boards, instrumentation, switchgear,
+UPS and transfer gear, and the standards that govern all of it. Factory floor, data center, and the
+gear that does not care which building it is in.
+
+Built in public by a field service engineer who has to find these documents anyway.
 
 ## The rule this repo runs on
 

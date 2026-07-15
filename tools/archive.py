@@ -26,7 +26,7 @@ import urllib.request
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "catalog" / "catalog.csv"
 SAVE = "https://web.archive.org/save/"
-UA = "factory-index archiver (+https://github.com/Skeeter-spec/factory-index)"
+UA = "industrial-index archiver (+https://github.com/Skeeter-spec/industrial-index)"
 
 COLUMNS = [
     "id", "title", "vendor", "doc_number", "revision", "revision_date", "category",
