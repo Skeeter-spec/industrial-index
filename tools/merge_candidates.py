@@ -90,7 +90,10 @@ def make_id(c, taken):
     rev = slug(c.get("revision"))
     parts = [p for p in (vendor, num if num not in ("", "n-a") else "", rev if rev not in ("", "n-a") else "") if p]
     if len(parts) < 2:
-        parts = [p for p in (vendor, slug(c.get("title"))[:60]) if p]
+        # Strip AFTER the truncation, not before: cutting a slug at a fixed width lands on a
+        # separator often enough, and "...-configurations-" is not a lowercase slug. The gate
+        # caught this on the first row that had no doc number and a long title.
+        parts = [p for p in (vendor, slug(c.get("title"))[:60].strip("-")) if p]
     base = "-".join(parts) or "row"
     rid, n = base, 2
     while rid in taken:            # never reuse, never renumber an existing one
