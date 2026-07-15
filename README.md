@@ -80,7 +80,7 @@ argument.
 
 <!-- BEGIN GENERATED: status. Do not hand edit. Regenerate: ./tools/build_indexes.py -->
 
-**12 documents catalogued. 3 of them have actually been opened by a human.**
+**47 documents catalogued. 3 of them have actually been opened by a human.**
 
 That second number is the honest one, and it is generated from the catalog rather than claimed in prose, so it cannot flatter itself.
 
@@ -89,10 +89,10 @@ That second number is the honest one, and it is generated from the catalog rathe
 | `TRACED` | 3 |
 | `READ IN FULL` | 0 |
 | `FETCHED, NOT READ` | 0 |
-| `LOCATED ONLY` | 7 |
+| `LOCATED ONLY` | 42 |
 | `CITED, UNREAD` | 0 |
 | `GATED, UNREAD` | 2 |
-| **snapshotted against link rot** | **10 of 12** |
+| **snapshotted against link rot** | **12 of 47** |
 | **mirrored locally (license cleared)** | **0** |
 
 By domain:
@@ -101,14 +101,14 @@ By domain:
 |---|---|
 | [instrumentation](domains/instrumentation/INDEX.md) | _none yet_ |
 | [maintenance](domains/maintenance/INDEX.md) | _none yet_ |
-| [plc-control](domains/plc-control/INDEX.md) | _none yet_ |
+| [plc-control](domains/plc-control/INDEX.md) | 17 |
 | [power-distribution](domains/power-distribution/INDEX.md) | _none yet_ |
 | [protocols](domains/protocols/INDEX.md) | 6 |
 | [robotics-motion](domains/robotics-motion/INDEX.md) | _none yet_ |
-| [safety](domains/safety/INDEX.md) | 1 |
+| [safety](domains/safety/INDEX.md) | 9 |
 | [silicon](domains/silicon/INDEX.md) | 3 |
 | [software-scada](domains/software-scada/INDEX.md) | _none yet_ |
-| [standards](domains/standards/INDEX.md) | 2 |
+| [standards](domains/standards/INDEX.md) | 12 |
 
 <!-- END GENERATED: status. -->
 

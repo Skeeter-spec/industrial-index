@@ -7,6 +7,12 @@ __pycache__/
 mission-control/
 SHELF.md
 
+# Staging for tools/merge_candidates.py. Proposed documents from wherever, plus the rejects it
+# writes back. This is PROCESS, and catalog.csv is the PRODUCT: a candidate is something somebody
+# claimed, a row is something that was fetched. Publishing the claims next to the records invites
+# exactly the confusion this repo exists to prevent, so the staging area never ships.
+catalog/_incoming/
+
 # THE PUBLISH BOUNDARY OF THIS REPO.
 #
 # mirrors/ holds document files. A document file is a copyright liability unless its catalog row

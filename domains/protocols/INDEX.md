@@ -47,7 +47,7 @@ device manual will not warn you about.
 | [MODBUS Application Protocol Specification](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf) ([snapshot](https://web.archive.org/web/20260715154556/https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)) | modbus.org | V1.1b3 | `TRACED` | link only |
 | [MODBUS Messaging on TCP/IP Implementation Guide](https://www.modbus.org/file/secure/messagingimplementationguide.pdf) ([snapshot](https://web.archive.org/web/20260712095147/https://www.modbus.org/file/secure/messagingimplementationguide.pdf)) | modbus.org | V1.0b | `TRACED` | link only |
 | [MODBUS over Serial Line Specification and Implementation Guide](https://www.modbus.org/file/secure/modbusoverserial.pdf) ([snapshot](https://web.archive.org/web/20260601051038/https://www.modbus.org/file/secure/modbusoverserial.pdf)) | modbus.org | V1.02 | `TRACED` | link only |
-| [MQTT Version 5.0](https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html) | OASIS | 5.0 | `LOCATED ONLY` | link only |
+| [MQTT Version 5.0](https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html) ([snapshot](https://web.archive.org/web/20260715162441/https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html)) | OASIS | 5.0 | `LOCATED ONLY` | link only |
 | [The CIP Networks Library (EtherNet/IP)](https://www.odva.org/technology-standards/key-technologies/ethernet-ip/) | ODVA |  | `GATED, UNREAD` | link only |
 
 <!-- END GENERATED: catalog. -->
