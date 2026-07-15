@@ -1,0 +1,239 @@
+#!/usr/bin/env python3
+"""Turn proposed candidate documents into catalog rows, but only the ones that survive a fetch.
+
+    ./tools/merge_candidates.py --dry-run          # say what would land and what would be rejected
+    ./tools/merge_candidates.py                    # fetch, filter, write the survivors into the catalog
+    ./tools/merge_candidates.py --staging DIR      # default: catalog/_incoming/
+
+Input is a directory of JSON files, each an array of candidate objects. Where they came from is not
+this script's business: a research agent, a vendor's index page, an afternoon of bookmarks. What
+matters is that a candidate is a CLAIM and a row is a RECORD, and the only thing standing between
+them should be a measurement rather than a good mood.
+
+WHY THIS EXISTS, and it is not tidiness.
+
+This repo measured its own seed data. Twelve rows were written from memory by someone who knew the
+subject, every one of them plausible, and FOUR WERE 404. Not obscure documents, not typos: one
+publisher had restructured its site and the other failures were the checker itself lying. A third of
+confident recall was wrong, and none of it looked wrong.
+
+So the rule this file enforces is the whole repo in one line: **a URL nobody fetched does not become
+a row.** Not a row with a caveat, not a row at a lower level. Not a row.
+
+That is also what makes it safe to source candidates in bulk from something that can be confidently
+wrong. Let the proposer propose. Nothing it says about reachability is load bearing, because this
+script does not believe any of it: it re fetches every URL itself and the fetch is the only vote
+that counts. A rejected candidate costs nothing. A bad row costs the reader's trust in every other
+row, which is the only asset here.
+
+WHAT IT WILL NOT DO
+
+Everything lands at LOCATED ONLY, which means exactly what the schema says: the URL is confirmed
+reachable and the CONTENT IS UNVERIFIED. A machine fetched a file. Nobody read it. Promoting a row
+above LOCATED ONLY is a human act and this script must never do it, because the moment a level can
+be earned automatically it stops being a claim about knowledge and starts being a claim about
+plumbing, and then the one column this repo runs on means nothing.
+
+Rejects are written out with their reason. They are not failures, they are the system working, and
+they are worth reading: a 404 in this file is usually a publisher having moved something.
+"""
+import argparse
+import csv
+import datetime
+import importlib.util
+import json
+import os
+import pathlib
+import re
+import sys
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+CATALOG = ROOT / "catalog" / "catalog.csv"
+STAGING = ROOT / "catalog" / "_incoming"
+
+COLUMNS = [
+    "id", "title", "vendor", "doc_number", "revision", "revision_date", "category",
+    "url", "archive_url", "license", "redistributable", "local_path", "sha256",
+    "verified_level", "verified_date", "notes",
+]
+
+NON_LICENSES = {
+    "", "unknown", "free", "free to download", "freely available", "public",
+    "open", "n/a", "none", "tbd",
+}
+
+
+def _load_reachable():
+    """Borrow check_links.reachable rather than writing a second one.
+
+    Two functions that decide "is this URL alive" is two functions that will disagree, and the one
+    that is wrong will be the one nobody is looking at. That function also already carries a
+    measured lesson this one would otherwise have to learn again the hard way: modbus.org and
+    nvlpubs.nist.gov both answer a HEAD with 404 and a GET with 200 on the identical URL, so a
+    failing HEAD proves nothing and is always retried with a GET.
+    """
+    spec = importlib.util.spec_from_file_location("check_links", ROOT / "tools" / "check_links.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.reachable
+
+
+def slug(s):
+    s = re.sub(r"[^a-z0-9]+", "-", (s or "").lower())
+    return re.sub(r"-+", "-", s).strip("-")
+
+
+def make_id(c, taken):
+    """vendor-docnumber-rev, per the schema. Falls back to the title when there is no number."""
+    vendor = slug(c.get("vendor"))
+    num = slug(c.get("doc_number"))
+    rev = slug(c.get("revision"))
+    parts = [p for p in (vendor, num if num not in ("", "n-a") else "", rev if rev not in ("", "n-a") else "") if p]
+    if len(parts) < 2:
+        parts = [p for p in (vendor, slug(c.get("title"))[:60]) if p]
+    base = "-".join(parts) or "row"
+    rid, n = base, 2
+    while rid in taken:            # never reuse, never renumber an existing one
+        rid = f"{base}-{n}"
+        n += 1
+    return rid
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--staging", default=str(STAGING))
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--timeout", type=int, default=30)
+    args = ap.parse_args()
+
+    reachable = _load_reachable()
+    today = datetime.date.today().isoformat()
+
+    staging = pathlib.Path(args.staging)
+    files = sorted(staging.glob("*.json")) if staging.is_dir() else []
+    if not files:
+        print(f"  no candidate files in {staging}")
+        return 0
+
+    with CATALOG.open(newline="", encoding="utf-8") as fh:
+        existing = list(csv.DictReader(fh))
+    taken = {r["id"] for r in existing}
+    # Normalize for dedupe: the same document reached by http and https is the same document.
+    seen_urls = {re.sub(r"^https?://", "", (r["url"] or "").strip().rstrip("/").lower()) for r in existing}
+
+    candidates = []
+    for f in files:
+        try:
+            data = json.loads(f.read_text())
+        except Exception as e:
+            print(f"  SKIP {f.name}: not readable JSON ({e})")
+            continue
+        if not isinstance(data, list):
+            print(f"  SKIP {f.name}: expected a JSON array")
+            continue
+        for c in data:
+            c["_src"] = f.stem
+            candidates.append(c)
+    print(f"  {len(candidates)} candidate(s) from {len(files)} file(s)\n")
+
+    landed, rejects = [], []
+    for c in candidates:
+        url = (c.get("url") or "").strip()
+        title = (c.get("title") or "").strip()
+        cat = (c.get("category") or c.get("_src") or "").strip()
+        why = None
+
+        if not url or not title:
+            why = "missing url or title"
+        elif not url.startswith(("http://", "https://")):
+            why = "url is not http(s)"
+        elif not (ROOT / "domains" / cat).is_dir():
+            why = f"category '{cat}' is not a domain"
+        else:
+            key = re.sub(r"^https?://", "", url.rstrip("/").lower())
+            if key in seen_urls:
+                why = "already in the catalog"
+
+        if why:
+            rejects.append((c, why, ""))
+            print(f"  reject  {title[:52]:52s} {why}")
+            continue
+
+        live, code = reachable(url, args.timeout)     # the only vote that counts
+        if not live:
+            rejects.append((c, "did not fetch", code))
+            print(f"  DEAD    {title[:52]:52s} [{code}]  <- proposed, not real")
+            continue
+
+        redist = (c.get("redistributable") or "no").strip().lower()
+        lic = (c.get("license") or "unknown").strip()
+        # A named license is the only thing that buys redistributable=yes. Same rule as the gate;
+        # applied here too so a bad candidate is stopped at the door rather than at the gate.
+        if redist == "yes" and lic.lower() in NON_LICENSES:
+            redist = "no"
+
+        rid = make_id(c, taken)
+        taken.add(rid)
+        key = re.sub(r"^https?://", "", url.rstrip("/").lower())
+        seen_urls.add(key)
+        landed.append({
+            "id": rid,
+            "title": title,
+            "vendor": (c.get("vendor") or "").strip() or "n/a",
+            "doc_number": (c.get("doc_number") or "").strip() or "n/a",
+            "revision": (c.get("revision") or "").strip() or "n/a",
+            "revision_date": (c.get("revision_date") or "").strip(),
+            "category": cat,
+            "url": url,
+            "archive_url": "",
+            "license": lic or "unknown",
+            "redistributable": redist,
+            "local_path": "",
+            "sha256": "",
+            "verified_level": "LOCATED ONLY",   # never anything else. See the module docstring.
+            "verified_date": today,
+            "notes": (c.get("notes") or "").strip(),
+        })
+        print(f"  land    {title[:52]:52s} [{code}] {rid}")
+
+    print()
+    print(f"  {len(landed)} would land, {len(rejects)} rejected")
+    dead = [r for r in rejects if r[1] == "did not fetch"]
+    if dead:
+        print(f"  {len(dead)} of the rejects were PROPOSED BUT NOT REAL. That is this script's whole job:")
+        for c, _, code in dead:
+            print(f"    .. [{code}] {(c.get('url') or '')[:90]}")
+
+    if args.dry_run:
+        print("\n  --dry-run, catalog untouched")
+        return 0
+    if not landed:
+        print("\n  nothing survived, catalog untouched")
+        return 0
+
+    # Re read before writing. Another session may own this file now.
+    with CATALOG.open(newline="", encoding="utf-8") as fh:
+        fresh = list(csv.DictReader(fh))
+    fresh_ids = {r["id"] for r in fresh}
+    add = [r for r in landed if r["id"] not in fresh_ids]
+
+    tmp = CATALOG.with_suffix(".csv.tmp")
+    with tmp.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=COLUMNS)
+        w.writeheader()
+        w.writerows(fresh + add)
+    os.replace(tmp, CATALOG)
+    print(f"\n  wrote {len(add)} new row(s), all at LOCATED ONLY")
+
+    if rejects:
+        rp = staging / "_rejected.json"
+        rp.write_text(json.dumps(
+            [{"why": w, "code": str(code), **{k: v for k, v in c.items()}} for c, w, code in rejects],
+            indent=2))
+        print(f"  rejects written to {rp.relative_to(ROOT)}")
+    print("\n  Next: ./tools/archive.py to snapshot them, then ./tools/build_indexes.py")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

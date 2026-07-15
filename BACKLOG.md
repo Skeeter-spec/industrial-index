@@ -196,7 +196,18 @@ XS26
 These are the reason to visit. Everything above is a link somebody else could have found.
 
 - Which document do I actually need. A router, because finding the doc is the real problem
-- RS485 will not talk: a decision tree
+- ~~RS485 will not talk: a decision tree~~ **WRITTEN**, `notes/rs485-will-not-talk.md`. **Its triage
+  order is owed and is Keaton's to pay.** The routing is anchored to pages of the spec. The ORDER is
+  reasoned from the document rather than from having chased it on a live bus, and it is labelled as a
+  first cut in the page itself. Three questions the page asks out loud and cannot answer:
+  - **Is polarization the answer four times in five?** Then it moves to the top and stops being a row
+    in a table.
+  - **What fails that the spec never describes?** The spec documents a correct bus. It does not
+    document the ways real ones break.
+  - **Which vendors sit on which side of the 19200 baud timer split?** Above 19200 the spec stops
+    scaling t1.5 and t3.5 and recommends fixed values, so two correct implementations disagree and
+    drop frames only at high baud. **Nobody publishes that table.** This repo could own it and it
+    would likely be the single most valuable page here.
 - Profinet drops: a decision tree
 - VFD faults on acceleration: a decision tree
 - Vendor fault code indexes with diagnosis notes
