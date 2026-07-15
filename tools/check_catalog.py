@@ -53,6 +53,10 @@ ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 SHA_RE = re.compile(r"^[a-f0-9]{64}$")
 
+# A Wayback URL carries the URL it snapshotted inside itself, after the timestamp. That is what
+# lets this be an OFFLINE check: the row already contains the answer, nobody has to fetch anything.
+WAYBACK_RE = re.compile(r"^https://web\.archive\.org/web/[0-9a-z_]+/(.+)$")
+
 # "free" is not a license. Neither is "free to download", which is the single most common way a
 # redistribution mistake gets made: the reader conflates the price with the grant. If a vendor
 # genuinely grants redistribution they say so in words you can quote, so require quotable words.
@@ -60,6 +64,20 @@ NON_LICENSES = {
     "", "unknown", "free", "free to download", "freely available", "public",
     "open", "n/a", "none", "tbd",
 }
+
+
+def _norm(u):
+    """Reduce a URL to the part worth comparing.
+
+    Scheme and a trailing slash are not a move. Reporting them as one trains the reader to skim
+    this list, and the whole point of the unfinished tier is that somebody actually reads it.
+    """
+    u = u.strip().lower()
+    for p in ("https://", "http://"):
+        if u.startswith(p):
+            u = u[len(p):]
+            break
+    return u.rstrip("/")
 
 
 def domains():
@@ -149,10 +167,28 @@ def main():
                 f"FETCHED, NOT READ.")
 
         # Unfinished. Not wrong, just not done.
-        if not (row.get("archive_url") or "").strip():
+        snap = (row.get("archive_url") or "").strip()
+        if not snap:
             unfinished.append(f"{rid}: no archive_url")
         if level == "LOCATED ONLY":
             unfinished.append(f"{rid}: content still unverified")
+
+        # The snapshot is of somewhere else. Visible, never fatal, and the distinction matters.
+        #
+        # MEASURED 2026-07-15. archive.py asks Wayback to save the row's url, and Wayback follows
+        # the redirect and snapshots wherever it lands. Four rows came back holding a snapshot of a
+        # URL the row never names. Every one of those snapshots is genuine and is of the right
+        # document, which is exactly why this is not an error: nothing here is WRONG.
+        #
+        # It is a fact the row is throwing away, and the fact is worth money. datasheets.raspberrypi
+        # .com/rp2040/rp2040-datasheet.pdf lands on a file called RP-008371-DS-1-rp2040-datasheet
+        # .pdf. That row says doc_number n/a and revision n/a. The publisher plainly has both and
+        # the redirect was carrying them the whole time. A stable url that hides a versioned one is
+        # the Modbus problem wearing a different hat: the link cannot rot, so nothing looks broken,
+        # and the revision moves underneath it in silence.
+        m = WAYBACK_RE.match(snap) if snap else None
+        if m and _norm(m.group(1)) != _norm(url):
+            unfinished.append(f"{rid}: snapshot is of {m.group(1)}, not the url this row names")
 
     print(f"  {len(rows)} rows, {len(seen_ids)} unique ids")
 
