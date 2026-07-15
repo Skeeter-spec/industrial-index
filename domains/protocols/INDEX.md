@@ -32,10 +32,17 @@ the sections named above and the document tells you they do not exist.
 vocabulary table, the false friend that costs more than the missing words, and the three traps the
 device manual will not warn you about.
 
+→ **[Modbus TCP: the unit id is not the slave id, except when it is](../../notes/modbus-tcp-unit-id.md)**
+covers the field the spec repurposes rather than removes, the byte order that reverses between the
+two Modbus documents, and why "works from my laptop, not from the PLC" is usually not a network
+problem.
+
 ## Reading order
 
 1. Serial line spec, for the physical layer and RTU framing. Most field problems are here.
 2. Application protocol spec, for function codes and exception codes. This is the one to keep open.
+   Note that this holds for TCP too: the TCP guide describes an envelope and defers the function
+   codes right back to this document, so it is the spec you want open regardless of transport.
 3. TCP implementation guide, only when you are actually doing Modbus TCP. The MBAP header and the
    unit id against slave id distinction are the parts that bite.
 
