@@ -23,6 +23,15 @@ device that is failing to talk, which is the manual everyone reads first. Failin
 classic: the bus floats, the first character gets eaten, and every device reports a framing error
 while every device is configured correctly.
 
+That paragraph was written before anyone here had opened the spec, and reading it end to end proved
+it right and then immediately showed why it is not enough: **the spec does not contain the words
+"timing" or "biasing."** Biasing is polarization, p.28. Timing is t1.5 and t3.5, p.13. Go looking for
+the sections named above and the document tells you they do not exist.
+
+→ **[RS485 will not talk](../../notes/rs485-will-not-talk.md)** routes the symptom to the page: the
+vocabulary table, the false friend that costs more than the missing words, and the three traps the
+device manual will not warn you about.
+
 ## Reading order
 
 1. Serial line spec, for the physical layer and RTU framing. Most field problems are here.
