@@ -6,6 +6,6 @@ _Notes for this domain go above the table. The table is generated._
 
 | Document | Vendor | Rev | Verified | Mirror |
 |---|---|---|---|---|
-| [The control of hazardous energy (lockout/tagout)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147) | OSHA |  | `LOCATED ONLY` | link only |
+| [The control of hazardous energy (lockout/tagout)](https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147) ([snapshot](https://web.archive.org/web/20260715162030/https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147)) | OSHA |  | `LOCATED ONLY` | link only |
 
 <!-- END GENERATED: catalog. -->

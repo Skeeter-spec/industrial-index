@@ -80,19 +80,19 @@ argument.
 
 <!-- BEGIN GENERATED: status. Do not hand edit. Regenerate: ./tools/build_indexes.py -->
 
-**12 documents catalogued. 0 of them have actually been opened by a human.**
+**12 documents catalogued. 3 of them have actually been opened by a human.**
 
 That second number is the honest one, and it is generated from the catalog rather than claimed in prose, so it cannot flatter itself.
 
 | | Count |
 |---|---|
-| `TRACED` | 0 |
+| `TRACED` | 3 |
 | `READ IN FULL` | 0 |
 | `FETCHED, NOT READ` | 0 |
-| `LOCATED ONLY` | 10 |
+| `LOCATED ONLY` | 7 |
 | `CITED, UNREAD` | 0 |
 | `GATED, UNREAD` | 2 |
-| **snapshotted against link rot** | **4 of 12** |
+| **snapshotted against link rot** | **10 of 12** |
 | **mirrored locally (license cleared)** | **0** |
 
 By domain:
