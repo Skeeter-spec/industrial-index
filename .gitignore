@@ -1,0 +1,25 @@
+__pycache__/
+.DS_Store
+*.pyc
+
+# Working notes and trackers stay internal. Publish the products, never the tracker
+# (matches keystone and power-service-toolbox).
+mission-control/
+SHELF.md
+
+# THE PUBLISH BOUNDARY OF THIS REPO.
+#
+# mirrors/ holds document files. A document file is a copyright liability unless its catalog row
+# says redistributable=yes with a stated license. Nothing lands in mirrors/ by accident: it is
+# ignored by default and each cleared file is force added on purpose.
+#
+#   git add -f mirrors/<path>     only after tools/check_mirrors.py passes on it
+#
+# tools/gate.sh fails if a tracked file in mirrors/ has no catalog row clearing it, so this
+# ignore rule is the seatbelt and the gate is the airbag.
+mirrors/*
+!mirrors/README.md
+!mirrors/.gitkeep
+
+# Fetched candidates awaiting a license decision. Never publishable by definition.
+staging/
