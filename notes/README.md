@@ -34,7 +34,29 @@ That is what goes here, and it is the part that cannot be scraped, generated, or
   document. They do not replace reading it, and nothing here should decide what anyone wears,
   touches, opens, or energizes.
 
+## What is here now
+
+- **[Diagnose by deviation, not by symptom](diagnose-by-deviation.md)**. The method page. Build the
+  health check in, record what healthy looks like before you need it, and trace differences back to
+  causes. Read this one first: it explains why everything else in this directory is the second best
+  way to work, and why that is still worth doing well.
+- **[RS485 will not talk](rs485-will-not-talk.md)**. A router into the serial line spec, including
+  the words that spec does not use for the things it covers.
+- **[Modbus TCP: the unit id is not the slave id, except when it is](modbus-tcp-unit-id.md)**. The
+  field the spec repurposes rather than removes.
+
 ## Standing rule
 
 If a note can be replaced by a link, make it a link. The catalog is for links. This directory is for
 the things that took someone a bad afternoon to learn.
+
+## The line on other people's work
+
+Characterization done for an employer belongs to that employer. **The method is portable, the tables
+are not.** Nothing here publishes a signature, a fingerprint, or a symptom table produced on someone
+else's payroll, and nothing here ever will.
+
+That is not only a legal boundary, it is a technical one. A signature is a fact about a specific
+board, a specific revision, and a specific bench. Someone else's baseline is not yours, and using it
+as one is the exact mistake the method exists to avoid. So the constraint and the pedagogy point the
+same way, which is the tell that the line is drawn in the right place.
