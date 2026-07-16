@@ -29,3 +29,4 @@ mirrors/*
 
 # Fetched candidates awaiting a license decision. Never publishable by definition.
 staging/
+.check_license_tmp/
