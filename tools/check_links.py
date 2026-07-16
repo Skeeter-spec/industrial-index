@@ -108,11 +108,61 @@ def reachable(url, timeout):
         return UNKNOWN, type(e).__name__
 
 
+# EVERY FIXTURE HERE IS A URL THAT ACTUALLY BEHAVED THIS WAY, IN THE WILD, ON 2026-07-16.
+# None are invented.
+#
+# This matters more than it looks. A sibling guard in this system shipped with
+# "2 controls fire, 4 negatives silent" written in its own docs and was SILENT on both
+# false claims that were live in this repo's BACKLOG.md the whole time - because its
+# fixtures had been written to match its own regex. It tested that a regex matches
+# itself and produced a PASS that got quoted back as proof.
+#
+# So: when a url is found misbehaving in the wild, PASTE THE REAL URL IN HERE.
+SELFTEST = [
+    # (url, expected, why this url is in the list)
+    ("https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147",
+     LIVE, "plain live document"),
+    ("https://www.iemfg.com/technical/switchgear-commissioning-handbook-9th-ed.pdf",
+     DEAD, "NEGATIVE CONTROL: a url invented on purpose. If this ever returns anything "
+           "but DEAD, the checker has stopped being able to detect a fabricated row."),
+    ("https://www.eaton.com/content/dam/eaton/products/electrical-circuit-protection/fuses/"
+     "solution-center/bus-ele-tech-lib-short-circuit-current-calculations.pdf",
+     UNKNOWN, "THE REGRESSION THIS FILE EXISTS TO PREVENT: eaton.com completes the TLS "
+              "handshake then hangs. Before 2026-07-16 this returned False and bucketed "
+              "LOST, i.e. 'drop the row' - for a live Eaton handbook."),
+    ("https://www.se.com/us/en/download/document/SPD_SNIS-7E6LKL_EN/",
+     LIVE, "se.com serves a reCAPTCHA page with a 200. LIVE is CORRECT here: the link "
+           "works. Whether the page IS the document is identity, and identity is "
+           "check_titles.py's job. Liveness is not identity."),
+]
+
+
+def selftest(timeout=15):
+    """Prove the checker can still tell the three states apart. Run before believing a report."""
+    print("  check_links selftest - real urls, measured in the wild\n")
+    ok = True
+    for url, expect, why in SELFTEST:
+        status, code = reachable(url, timeout)
+        hit = status == expect
+        ok &= hit
+        print(f"  {'PASS' if hit else 'FAIL'}  expected {expect:<7} got {status:<7} [{code}]")
+        print(f"        {url[:88]}")
+        print(f"        {why}")
+        print()
+    print("  ALL PASS" if ok else "  *** FAILED - do not trust a report from this checker ***")
+    return 0 if ok else 1
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--category")
     ap.add_argument("--timeout", type=int, default=15)
+    ap.add_argument("--selftest", action="store_true",
+                    help="prove LIVE/DEAD/UNKNOWN are still distinguishable, against real urls")
     args = ap.parse_args()
+
+    if args.selftest:
+        return selftest(args.timeout)
 
     with CATALOG.open(newline="", encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
