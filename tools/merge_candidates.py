@@ -208,12 +208,43 @@ def main():
                 continue
             print(f"  ROTTED  {title[:52]:52s} [{code}] canonical gone, snapshot holds")
 
-        redist = (c.get("redistributable") or "no").strip().lower()
+        note = (c.get("notes") or "").strip()
+
+        # `redistributable` is a two value column and a candidate will hand you an essay. Measured
+        # 2026-07-16: a batch arrived with "yes (per apache-2.0 terms; standard attribution/notice
+        # conditions apply)" and "conditional -- cc by-nc-nd 4.0 permits sharing the unmodified work
+        # with attribution for non-commercial purposes only; no derivatives". Both are BETTER
+        # thinking than a bare yes, and both are unusable as a value: the old code lowercased the
+        # essay and compared it to "yes", which never matched, so the NON_LICENSES guard below could
+        # not fire and the essay went into the column. The gate caught it. The gate should not have
+        # had to.
+        #
+        # Take the leading token and keep the reasoning in notes, because the reasoning is the part
+        # worth having. Anything that does not START with yes becomes no, which is the schema's
+        # default and the safe direction: "conditional" is not a yes.
+        redist_raw = (c.get("redistributable") or "no").strip()
+        redist = "yes" if redist_raw.lower().startswith("yes") else "no"
+        if redist_raw.lower() not in ("yes", "no"):
+            note = f"{note} Candidate stated redistributable as: {redist_raw}".strip()
         lic = (c.get("license") or "unknown").strip()
         # A named license is the only thing that buys redistributable=yes. Same rule as the gate;
         # applied here too so a bad candidate is stopped at the door rather than at the gate.
         if redist == "yes" and lic.lower() in NON_LICENSES:
             redist = "no"
+
+        # `revision_date` wants a full ISO date and the schema says empty when the document does not
+        # state one. Candidates supply what the document actually says, which is very often a month
+        # ("2019-09"), sometimes a year, and sometimes two dates ("2023-06 (published); 2025-08
+        # (last modified)"). None of those are ISO dates and the gate rejects all of them.
+        #
+        # Whether YYYY-MM should be allowed is an OPEN QUESTION recorded in BACKLOG.md and it is not
+        # this script's to decide. So do what the catalog already does for PI-MBUS-300's June 1996
+        # and the Moxa guide's April 2021: empty the field, keep the real date in notes. Honest, and
+        # it loses the field, which is exactly the cost the backlog is weighing.
+        rd = (c.get("revision_date") or "").strip()
+        if rd and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", rd):
+            note = f"{note} The document states its date as: {rd}.".strip()
+            rd = ""
 
         rid = make_id(c, taken)
         taken.add(rid)
@@ -225,17 +256,26 @@ def main():
             "vendor": (c.get("vendor") or "").strip() or "n/a",
             "doc_number": (c.get("doc_number") or "").strip() or "n/a",
             "revision": (c.get("revision") or "").strip() or "n/a",
-            "revision_date": (c.get("revision_date") or "").strip(),
+            "revision_date": rd,
             "category": cat,
             "url": url,
             "archive_url": snap,   # set only for a ROTTED row; archive.py fills the rest
             "license": lic or "unknown",
             "redistributable": redist,
+            # Say it, do not leave it blank for someone else to interpret. This column was added
+            # after this script was written, so the row dict simply had no key for it and
+            # csv.DictWriter filled the gap with "" without raising: a schema that says "empty not
+            # allowed" quietly getting empties, from the one tool that writes rows in bulk. The gate
+            # coerces "" to UNVERIFIED and so nothing unsafe shipped, but a value that only means
+            # the right thing because a READER fixes it up is not recorded, it is inferred.
+            # UNVERIFIED is also the only honest basis available here: this script fetches, it does
+            # not read a copyright page, and check_license.py is what promotes a row off UNVERIFIED.
+            "license_basis": "UNVERIFIED",
             "local_path": "",
             "sha256": "",
             "verified_level": "LOCATED ONLY",   # never anything else. See the module docstring.
             "verified_date": today,
-            "notes": (c.get("notes") or "").strip(),
+            "notes": note,
         })
         print(f"  land    {title[:52]:52s} [{code}] {rid}")
 

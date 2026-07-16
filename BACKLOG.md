@@ -220,6 +220,34 @@ Not changes. Questions, recorded where they were noticed so the next person does
   PI-MBUS-300 says June 1996, the Moxa protocols guide says April 2021, the DOE handbook says June
   1992. All three are now empty with the real date in `notes`, which is honest and loses the field.
   Allowing `YYYY-MM` is a one line change. Worth deciding on purpose rather than by drift.
+- **`check_license.py` says CONFLICT when a document AGREES with its row, and almost every row in
+  this catalog is about to trigger it.** Its own vocabulary says CONFLICT means "the document carries
+  language that contradicts or narrows THE CLAIM". Read the code: `check(url, target)` takes a
+  download path, not the row, and `verdict(grants, narrows)` returns CONFLICT whenever narrowing
+  language exists ANYWHERE in the text, having never seen what the row claims. Measured 2026-07-16 on
+  four new rows: KIGEM, the Ignition manual, the TXOne whitepaper, and the GatherTech manual all came
+  back CONFLICT. All four say `redistributable=no` and `license: all rights reserved`. The document
+  saying "all rights reserved" is those rows being RIGHT. **This catalog is mostly proprietary vendor
+  literature, so `--all` would return a wall of CONFLICTs that are all correct rows**, which is the
+  mass red this repo already has a rule about: a check that fires on nearly everything is the
+  suspect, not the finding, and the danger is a later session "fixing" good rows to silence it.
+  The verdict is grant shaped, and it has no way to say **CONFIRMED: the document states a
+  restriction and the row already says no.** That is the common case here, and it currently reads as
+  an alarm. Fix before anyone runs `--all` in anger.
+- **The basis vocabulary has three values and open source is a fourth shape.** `DOCUMENT` means the
+  document grants it in its own words, `STATUTE` means the document is silent and the claim rests on
+  law, `UNVERIFIED` means nobody checked. Measured 2026-07-16 on four rows pointing at GitHub repo
+  pages and a pkg.go.dev godoc page: `check_license.py` reads all four as SILENT, and it is right.
+  **A repository page does not contain its own licence. The LICENSE file is a different document at
+  a different url.** So the Apache-2.0 and MIT facts on those rows are real, are facts about the
+  CODE, and were established from a file the row does not name. That is not DOCUMENT, it is not
+  STATUTE, and calling it UNVERIFIED is unfair to a LICENSE file somebody actually opened. All four
+  are now `redistributable=no`, which costs nothing because this repo mirrors nothing, and which is
+  the safe direction. But the column is recording "we did not check" about a thing that WAS checked,
+  which is the same category of dishonesty the column was added to end, pointing the other way. A
+  fourth basis naming a sibling document at the publisher would say it exactly. **Do not add it for
+  four rows.** Decide it when plc-control lands, where vendor literature pages have this shape by
+  the hundred.
 - **`sha256` is reserved for mirrored files, so a hash of what a URL SERVED has nowhere to live.**
   The three Modbus rows carry theirs in `notes`. That hash is the sharpest defense there is against a
   version agnostic URL, and it is useful precisely when the document CANNOT be mirrored. Possibly its
