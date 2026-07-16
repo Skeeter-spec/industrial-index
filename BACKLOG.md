@@ -14,11 +14,21 @@ has a real URL and a real verification level. Until then it lives here, where it
 Depth first, one domain at a time. Breadth is what makes this a link dump.
 
 The first domains are the ones where the author can check a document against **ground truth** rather
-than against other documents: hands on the power chain, LOTO certified and recertified every six
-months, 70E trained through the apprenticeship, a proprietary PLC built and running, install level
-networking. In those areas a wrong manual is detectable. Everywhere else, only the manual's own
-confidence is visible, and that is exactly the condition where a catalog quietly fills up with
-plausible garbage.
+than against other documents.
+
+On protocols, that ground truth is direct. Electronics prototype development and board level
+characterization: pulling communication boards off tools and characterizing components and signal
+interactions against a known good baseline, then tracing deviations back to configuration and
+physical damage. RS-232 point to point host communications. Modbus TCP run in the field. And a
+SECS-I to HSMS migration across many tools, each with its own legacy fallout, which is an industrial
+protocol moved off legacy serial onto TCP/IP, repeatedly, in production. That last one is
+structurally the same transition as Modbus RTU to Modbus TCP, which is why this repo starts here.
+
+On power distribution, hands on the whole power chain, NFPA 70E training through a DOL
+apprenticeship, and lockout tagout training with six month recertification through 2025.
+
+In those areas a wrong manual is detectable. Everywhere else only the manual's own confidence is
+visible, and that is exactly the condition where a catalog quietly fills up with plausible garbage.
 
 | Order | Domain | Why here |
 |---|---|---|
