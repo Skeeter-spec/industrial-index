@@ -24,8 +24,14 @@ SECS-I to HSMS migration across many tools, each with its own legacy fallout, wh
 protocol moved off legacy serial onto TCP/IP, repeatedly, in production. That last one is
 structurally the same transition as Modbus RTU to Modbus TCP, which is why this repo starts here.
 
-On power distribution, hands on the whole power chain, NFPA 70E training through a DOL
-apprenticeship, and lockout tagout training with six month recertification through 2025.
+On power distribution it is narrower and worth stating exactly, because a vague claim to "the whole
+power chain" is worth nothing to a reader deciding whether to trust a row. Protective relays: set,
+tested, replaced, and nuisance trips chased back to a cause. Generators, of two unrelated kinds: the
+RF and bias generators that deliver power into a plasma chamber, and standby sets tied in on the
+building side. Twenty kilowatts of delivery into a plasma load, with the EMI loop that comes with it.
+And acceptance testing as a method rather than a certificate: measure the gear, compare against the
+published values, find what explains the deviation, recommend. NFPA 70E training through a DOL
+apprenticeship. Lockout tagout training, recertified every six months through 2025.
 
 In those areas a wrong manual is detectable. Everywhere else only the manual's own confidence is
 visible, and that is exactly the condition where a catalog quietly fills up with plausible garbage.
@@ -33,7 +39,7 @@ visible, and that is exactly the condition where a catalog quietly fills up with
 | Order | Domain | Why here |
 |---|---|---|
 | 1 | `protocols` | Modbus, EtherNet/IP, and the serial layer are free, canonical, short, and checkable. Best value per hour in the whole list, and it is where the tribal knowledge is worst. |
-| 2 | `power-distribution` | The author's ground truth. Nobody else's automation doc repo has switchgear, UPS, ATS, and protective relays in it. This is the differentiator. |
+| 2 | `power-distribution` | Nobody else's automation doc repo carries switchgear, UPS, transfer gear, and protective relays at all, which is the differentiator. Note what that does and does not say: the documents are catalogued here because nobody else catalogues them, at whatever level each was actually read. The author's own ground truth covers the relay and generator side of that list, not all of it, and the level column is where the difference shows. |
 | 3 | `plc-control` | The largest and most searched. Also the most link rotted, so the snapshot machinery earns its keep. |
 | 4 | `standards` | Mostly `CITED, UNREAD` and `GATED, UNREAD` rows plus scope notes. Low effort, high value, because "which standard even governs this" is the actual question people have. |
 | 5+ | everything else | Only once the first four are worth linking to. |
