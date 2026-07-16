@@ -87,7 +87,7 @@ STAGING = ROOT / "catalog" / "_incoming"
 
 COLUMNS = [
     "id", "title", "vendor", "doc_number", "revision", "revision_date", "category",
-    "url", "archive_url", "license", "redistributable", "local_path", "sha256",
+    "url", "archive_url", "license", "redistributable", "license_basis", "local_path", "sha256",
     "verified_level", "verified_date", "notes",
 ]
 

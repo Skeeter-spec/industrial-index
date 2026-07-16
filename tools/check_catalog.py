@@ -31,7 +31,7 @@ DOMAINS = ROOT / "domains"
 
 COLUMNS = [
     "id", "title", "vendor", "doc_number", "revision", "revision_date", "category",
-    "url", "archive_url", "license", "redistributable", "local_path", "sha256",
+    "url", "archive_url", "license", "redistributable", "license_basis", "local_path", "sha256",
     "verified_level", "verified_date", "notes",
 ]
 
@@ -48,6 +48,32 @@ LEVELS = {
 # A level that means the content was never confirmed. A row at one of these cannot also claim to
 # have been mirrored: you cannot have the file and not have fetched it.
 UNOPENED = {"LOCATED ONLY", "CITED, UNREAD", "GATED, UNREAD"}
+
+# `license_basis`: WHY this row believes its licence. An INDEPENDENT AXIS from verified_level.
+#
+# verified_level answers "how far did someone read the CONTENT". It cannot answer "does anyone know
+# the LICENCE", and until 2026-07-16 this checker used it as a proxy for exactly that: it flagged
+# redistributable=yes at LOCATED ONLY as "a legal claim on a document nobody has opened". That proxy
+# is wrong in both directions. You can read a manual end to end and never look at its copyright page.
+# You can read ONLY the copyright page and know the licence exactly while the content stays unread,
+# which is the true state of thirteen rows here.
+#
+# This is the toolbox's provenance bug, exactly: `TRACED` recorded how far a document was read and
+# said nothing about WHOSE COPY was read, and the fix was a machine checked column rather than a
+# better intention. Same shape, same fix.
+BASES = {
+    # The document grants it, in its own words. `notes` carries the quote. The strongest basis there
+    # is, and the only one that is a quotation rather than a legal conclusion.
+    "DOCUMENT",
+    # The claim rests on law, not on the document, and the document is SILENT about its own terms.
+    # 17 USC 105 for a federal work, or the government edicts doctrine for regulatory text. Usually
+    # right and NOT a defect. It is a conclusion someone drew, and the row should say so, because
+    # 17 USC 105 reaches works of federal EMPLOYEES and does not reach a contractor's manuscript or
+    # a copyrighted table reprinted by permission inside an otherwise public domain report.
+    "STATUTE",
+    # Nobody has checked. The honest default, and the only value that is a defect under a yes.
+    "UNVERIFIED",
+}
 
 ID_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -127,6 +153,13 @@ def main():
         if level and level not in LEVELS:
             errors.append(f"{where}: verified_level '{level}' is not in the vocabulary")
 
+        # Empty is not a fourth state. It reads as "no opinion" and would let a yes through the
+        # invariant below by saying nothing, which is the exact move this column exists to stop.
+        basis = (row.get("license_basis") or "").strip() or "UNVERIFIED"
+        if basis not in BASES:
+            errors.append(f"{where}: license_basis '{basis}' is not in the vocabulary "
+                          f"({', '.join(sorted(BASES))})")
+
         url = (row.get("url") or "").strip()
         if url and not url.startswith(("http://", "https://")):
             errors.append(f"{where}: url is not http(s)")
@@ -187,10 +220,40 @@ def main():
         # is also not free: TM 5-811-14 is a public domain Army document EXCEPT the asterisked
         # paragraph reprinting IEEE 242 by permission. A licence is not uniform across a document,
         # so "the publisher is the US government" is a hypothesis about a file nobody has opened.
-        if redist == "yes" and level in ("LOCATED ONLY", "CITED, UNREAD", "GATED, UNREAD"):
+        # WAS: `redist == "yes" and level in UNOPENED` -> "a legal claim on a document nobody has
+        # opened", reported as unfinished. Retired 2026-07-16 for being wrong twice over.
+        #
+        # It asked the wrong column. verified_level is about the CONTENT, and a licence lives on the
+        # copyright page: reading it does not raise the level, and raising the level does not mean
+        # anyone read it. Thirteen rows sat under that warning, and when they were finally read at
+        # the publisher, ten were resting on a statutory inference and THREE CARRIED AN EXPLICIT
+        # WRITTEN GRANT. The proxy had been nagging about rows that were provably fine while having
+        # nothing to say about the ones that were merely assumed.
+        #
+        # And it was unfinished, not an error, which is the deeper bug. This repo has already shipped
+        # a row whose own note said "verify this licence before trusting redistributable=yes" WITH
+        # the yes still in it, and the yes was wrong. A gate line reading "unfinished" next to a
+        # published legal claim is that same note wearing a checker's uniform. A recorded doubt is
+        # not a check; it is the alibi that lets the claim ship. So this one is an ERROR.
+        if redist == "yes" and basis == "UNVERIFIED":
+            errors.append(
+                f"{where}: redistributable=yes with license_basis=UNVERIFIED. This row is telling a "
+                f"reader they may lawfully republish a document on the strength of nobody having "
+                f"checked. Read it (tools/check_license.py --id {rid}), then say what the yes rests "
+                f"on: DOCUMENT if it grants in its own words, STATUTE if it is silent and the claim "
+                f"rests on 17 USC 105 or the edicts doctrine.")
+
+        # A STATUTE basis is not a defect and this is deliberately not an error. Most public domain
+        # federal works say nothing at all, so demanding a written grant would delete good rows,
+        # which is the direction a checker's findings always fall. It IS worth a reader's attention:
+        # 17 USC 105 is a conclusion about a file, and TM 5-811-14 is a public domain Army document
+        # EXCEPT the asterisked paragraph reprinting IEEE 242 by permission. A licence is not uniform
+        # across a document, and the asterisked paragraph is always the one someone wants.
+        if redist == "yes" and basis == "STATUTE":
             unfinished.append(
-                f"{rid}: claims redistributable=yes at '{level}' — a legal claim on a document "
-                f"nobody has opened")
+                f"{rid}: redistributable=yes rests on statute, not on the document. The document is "
+                f"silent about its own terms. Correct as far as anyone knows, and worth re-reading "
+                f"before anything is mirrored on the strength of it.")
 
         # The snapshot is of somewhere else. Visible, never fatal, and the distinction matters.
         #
