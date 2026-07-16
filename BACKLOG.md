@@ -191,6 +191,26 @@ XS26
 
 ---
 
+## Schema questions that have come up in practice
+
+Not changes. Questions, recorded where they were noticed so the next person does not rediscover them.
+
+- **`revision_date` cannot say "June 1996".** The column wants a full ISO date and the schema says
+  empty if the document does not state one. But plenty of documents DO state one, to the month:
+  PI-MBUS-300 says June 1996, the Moxa protocols guide says April 2021, the DOE handbook says June
+  1992. All three are now empty with the real date in `notes`, which is honest and loses the field.
+  Allowing `YYYY-MM` is a one line change. Worth deciding on purpose rather than by drift.
+- **`sha256` is reserved for mirrored files, so a hash of what a URL SERVED has nowhere to live.**
+  The three Modbus rows carry theirs in `notes`. That hash is the sharpest defense there is against a
+  version agnostic URL, and it is useful precisely when the document CANNOT be mirrored. Possibly its
+  own column.
+- **Every standards storefront blocks bots.** Measured 2026-07-15: ANSI webstore, Accuristech, IHS
+  Global, and GlobalSpec all answer 403 to any fetch, and TIA publishes no per standard page. So
+  TIA-485-A and TIA/EIA-232-F, the standards literally under RS-485 and RS-232, have NO citable
+  landing page and are not in the catalog. Two rows sharing a generic "buy standards" storefront URL
+  would have told a reader neither what the standard covers nor what it costs. This also means
+  `check_links.py` can never verify a gated row: a 403 from a storefront is not evidence of anything.
+
 ## Original notes to write (`notes/`)
 
 These are the reason to visit. Everything above is a link somebody else could have found.

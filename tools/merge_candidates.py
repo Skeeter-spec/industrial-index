@@ -46,6 +46,40 @@ import os
 import pathlib
 import re
 import sys
+import urllib.parse
+import urllib.request
+
+WAYBACK_API = "https://archive.org/wayback/available?url="
+# archive.org answers a bare urllib request with an HTTPError. That reads exactly like "no snapshot
+# exists" and is not: it is a user agent check. Measured 2026-07-15, after it nearly cost two real
+# documents.
+BROWSER_UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+              "(KHTML, like Gecko) Chrome/120.0 Safari/537.36")
+
+
+def wayback(url, timeout=30):
+    """The closest Wayback snapshot of url, or None.
+
+    A dead canonical is not automatically a dead row. `check_links.py` already names the state:
+    ROTTED means the publisher deleted it and the snapshot holds, and it calls that the system
+    SUCCEEDING, because the whole reason archive_url is mandatory is the day the vendor deletes the
+    manual for the obsolete equipment that is still racked and still running.
+
+    So a candidate whose URL 404s gets one more question asked of it before rejection: did this
+    document ever exist? A snapshot is evidence that it did. This does NOT soften the gate. A URL
+    somebody hallucinated was never live, so nothing ever archived it, and it still gets rejected.
+    """
+    req = urllib.request.Request(WAYBACK_API + urllib.parse.quote(url, safe=""),
+                                 headers={"User-Agent": BROWSER_UA})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            data = json.loads(r.read())
+    except Exception:
+        return None
+    snap = (data.get("archived_snapshots") or {}).get("closest") or {}
+    if snap.get("available") and str(snap.get("status")) == "200" and snap.get("url"):
+        return snap["url"].replace("http://web.archive.org", "https://web.archive.org")
+    return None
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CATALOG = ROOT / "catalog" / "catalog.csv"
@@ -163,10 +197,16 @@ def main():
             continue
 
         live, code = reachable(url, args.timeout)     # the only vote that counts
+        snap = ""
         if not live:
-            rejects.append((c, "did not fetch", code))
-            print(f"  DEAD    {title[:52]:52s} [{code}]  <- proposed, not real")
-            continue
+            # Dead canonical. Ask the one question that separates a deleted document from an
+            # invented one, and let the answer decide.
+            snap = wayback(url) or ""
+            if not snap:
+                rejects.append((c, "did not fetch", code))
+                print(f"  DEAD    {title[:52]:52s} [{code}]  <- proposed, not real")
+                continue
+            print(f"  ROTTED  {title[:52]:52s} [{code}] canonical gone, snapshot holds")
 
         redist = (c.get("redistributable") or "no").strip().lower()
         lic = (c.get("license") or "unknown").strip()
@@ -188,7 +228,7 @@ def main():
             "revision_date": (c.get("revision_date") or "").strip(),
             "category": cat,
             "url": url,
-            "archive_url": "",
+            "archive_url": snap,   # set only for a ROTTED row; archive.py fills the rest
             "license": lic or "unknown",
             "redistributable": redist,
             "local_path": "",

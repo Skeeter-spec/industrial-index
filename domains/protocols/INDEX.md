@@ -50,11 +50,33 @@ problem.
 
 | Document | Vendor | Rev | Verified | Mirror |
 |---|---|---|---|---|
+| [RS-485 Design and install best practices: Guidelines for successful communication](https://library.e.abb.com/public/19382ad529ef49f0803e1ec89fbbf6b3/LVD-EOTKN121U-EN_RS-485designandinstallbestpractices_REVA.pdf) | ABB | A | `LOCATED ONLY` | link only |
+| [RS-422 & RS-485 Applications eBook: A Practical Guide To Using RS-422 and RS-485 Serial Interfaces](https://advdownload.advantech.com/productfile/Downloadfile3/1+3FD+0/RS422-RS485%20ApplicationNote_4218wp%20ebook.pdf) | Advantech (B+B SmartWorx) | 2.0 | `LOCATED ONLY` | link only |
+| [MODBUS RTU Functions and Addressing Modes](https://cdn.automationdirect.com/static/manuals/t1kmodbusm/ch3.pdf) | AutomationDirect |  | `LOCATED ONLY` | link only |
+| [Schneider Electric Modicon Modbus Protocol](https://www.cisa.gov/news-events/ics-advisories/icsa-17-101-01) | CISA (Cybersecurity and Infrastructure Security Agency) |  | `LOCATED ONLY` | link only |
 | [Sparkplug Specification](https://sparkplug.eclipse.org/specification/version/3.0/documents/sparkplug-specification-3.0.0.pdf) ([snapshot](https://web.archive.org/web/20260715162455/https://sparkplug.eclipse.org/specification/version/3.0/documents/sparkplug-specification-3.0.0.pdf)) | Eclipse Foundation | 3.0.0 | `LOCATED ONLY` | link only |
+| [Enhanced Receiver Failsafe Implementation In Dual Protocol SP339 and XR34350 Serial Transceivers](https://www.maxlinear.com/appnote/ani-22.pdf) | Exar Corporation (now MaxLinear) |  | `LOCATED ONLY` | link only |
+| [FreeModbus API Documentation](https://www.embedded-solutions.at/files/freemodbus-v1.6-apidoc/main.html) | FreeMODBUS project (open source, Christian Walter) | 1.6 | `LOCATED ONLY` | link only |
+| [libmodbus API Reference](https://libmodbus.org/reference/) | libmodbus project (open source, Stephane Raimbault et al.) |  | `LOCATED ONLY` | link only |
+| [RS-485 Advanced Fail-Safe Feature Application Note](https://www.maxlinear.com/appnote/an_291.pdf) | MaxLinear | 01 | `LOCATED ONLY` | link only |
+| [RS-485 Transceivers in Fieldbus Networks Application Note](https://www.maxlinear.com/appnote/rs-485%20transceivers%20in%20fieldbus%20networks%20application%20note_300anr00.pdf) | MaxLinear | 00 | `LOCATED ONLY` | link only |
+| [Conformance Test Specification for Modbus TCP](http://www.modbus.org/docs/MBConformanceTestSpec_v3.0.pdf) ([snapshot](https://web.archive.org/web/20250313004744/https://modbus.org/docs/MBConformanceTestSpec_v3.0.pdf)) | Modbus Organization, Inc. | Version 3.0 | `LOCATED ONLY` | link only |
+| [MODBUS/TCP Security Protocol Specification](https://www.modbus.org/file/secure/modbussecurityprotocol.pdf) | Modbus Organization, Inc. | v36 | `LOCATED ONLY` | link only |
 | [MODBUS Application Protocol Specification](https://www.modbus.org/file/secure/modbusprotocolspecification.pdf) ([snapshot](https://web.archive.org/web/20260715154556/https://www.modbus.org/file/secure/modbusprotocolspecification.pdf)) | modbus.org | V1.1b3 | `TRACED` | link only |
 | [MODBUS Messaging on TCP/IP Implementation Guide](https://www.modbus.org/file/secure/messagingimplementationguide.pdf) ([snapshot](https://web.archive.org/web/20260712095147/https://www.modbus.org/file/secure/messagingimplementationguide.pdf)) | modbus.org | V1.0b | `TRACED` | link only |
 | [MODBUS over Serial Line Specification and Implementation Guide](https://www.modbus.org/file/secure/modbusoverserial.pdf) ([snapshot](https://web.archive.org/web/20260601051038/https://www.modbus.org/file/secure/modbusoverserial.pdf)) | modbus.org | V1.02 | `TRACED` | link only |
+| [Modicon Modbus Protocol Reference Guide](http://www.modbus.org/docs/PI_MBUS_300.pdf) ([snapshot](https://web.archive.org/web/20250825041232/https://www.modbus.org/docs/PI_MBUS_300.pdf)) | Modicon (Schneider Electric predecessor) | Rev. J | `LOCATED ONLY` | link only |
+| [Industrial Protocols User's Guide](https://www.moxa.com/getmedia/048873ee-468f-4e61-80c6-dfd7eabc44d7/moxa-industrial-protocols-users-guide-v6.2.pdf) | Moxa Inc. | Version 6.2 | `LOCATED ONLY` | link only |
 | [MQTT Version 5.0](https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html) ([snapshot](https://web.archive.org/web/20260715162441/https://docs.oasis-open.org/mqtt/mqtt/v5.0/os/mqtt-v5.0-os.html)) | OASIS | 5.0 | `LOCATED ONLY` | link only |
 | [The CIP Networks Library (EtherNet/IP)](https://www.odva.org/technology-standards/key-technologies/ethernet-ip/) | ODVA |  | `GATED, UNREAD` | link only |
+| [PyModbus documentation](https://pymodbus.readthedocs.io/en/stable/) | pymodbus project (open source) | 3.14.0 | `LOCATED ONLY` | link only |
+| [External Fail-Safe Biasing of RS-485 Networks](https://www.renesas.com/www/doc/application-note/an1986.pdf) | Renesas Electronics (Intersil legacy line) | 1.00 | `LOCATED ONLY` | link only |
+| [How to Isolate Signal and Power for an RS-485 System](https://www.ti.com/lit/ab/slla416d/slla416d.pdf) | Texas Instruments | D | `LOCATED ONLY` | link only |
+| [Interface Circuits for TIA/EIA-232-F](https://www.ti.com/lit/an/slla037a/slla037a.pdf) | Texas Instruments | A | `LOCATED ONLY` | link only |
+| [RS-422 and RS-485 Standards Overview and System Configurations](https://www.ti.com/lit/an/slla070d/slla070d.pdf) | Texas Instruments | D | `LOCATED ONLY` | link only |
+| [The RS-485 Design Guide](https://www.ti.com/lit/an/slla272d/slla272d.pdf) | Texas Instruments | D | `LOCATED ONLY` | link only |
+| [AN-1057 Ten Ways to Bulletproof RS-485 Interfaces](https://www.ti.com/lit/an/snla049b/snla049b.pdf) | Texas Instruments (originally National Semiconductor, AN-1057) | B | `LOCATED ONLY` | link only |
+| [FAILSAFE Biasing of Differential Buses](https://www.ti.com/lit/an/snla031/snla031.pdf) | Texas Instruments (originally National Semiconductor, AN-847) |  | `LOCATED ONLY` | link only |
+| [Conformance Test Policy for the Modbus/TCP Conformance Test Laboratory](https://web.eecs.umich.edu/~modbus/documents/Conformance_Test_Policy_2_0.pdf) | University of Michigan Modbus/TCP Conformance Test Laboratory | Version 2.0 | `LOCATED ONLY` | link only |
 
 <!-- END GENERATED: catalog. -->
