@@ -49,6 +49,11 @@ visible, and that is exactly the condition where a catalog quietly fills up with
 ## protocols
 
 - Modbus RTU and TCP: application protocol, serial line guide, TCP implementation guide **(seeded)**
+- SEMI E4 (SECS-I), E5 (SECS-II), E30 (GEM), E37 (HSMS). Sold by SEMI, so expect `GATED, UNREAD` and
+  `CITED, UNREAD` rows: the value here is the note, not the links. It sits second because the author
+  moved production tools off SECS-I serial onto HSMS over TCP/IP, tool after tool, each with its own
+  legacy fallout. That is structurally the same transition as Modbus RTU to Modbus TCP, and the two
+  together are the ground truth the whole protocols domain is anchored to.
 - EtherNet/IP and CIP, CIP Safety, CIP Motion (ODVA, sold, cite by number)
 - PROFIBUS DP and PROFINET, PROFIsafe (PI)
 - EtherCAT, EtherCAT slave controller documentation (ETG)
@@ -62,7 +67,6 @@ visible, and that is exactly the condition where a catalog quietly fills up with
 - Serial physical layer: RS232, RS422, RS485, TIA/EIA-485 biasing and termination
 - Ethernet: IEEE 802.3, VLANs, PoE 802.3af/at/bt, TSN 802.1Q series, PTP IEEE 1588
 - Wireless: LoRaWAN, Zigbee, BLE, ISA100.11a, private 5G for industrial
-- SEMI E4, E5, E30, E37 (SECS/GEM) if fabs ever become relevant
 
 ## power-distribution
 
@@ -220,18 +224,57 @@ Not changes. Questions, recorded where they were noticed so the next person does
   The three Modbus rows carry theirs in `notes`. That hash is the sharpest defense there is against a
   version agnostic URL, and it is useful precisely when the document CANNOT be mirrored. Possibly its
   own column.
-- **Every standards storefront blocks bots.** Measured 2026-07-15: ANSI webstore, Accuristech, IHS
-  Global, and GlobalSpec all answer 403 to any fetch, and TIA publishes no per standard page. So
-  TIA-485-A and TIA/EIA-232-F, the standards literally under RS-485 and RS-232, have NO citable
-  landing page and are not in the catalog. Two rows sharing a generic "buy standards" storefront URL
-  would have told a reader neither what the standard covers nor what it costs. This also means
-  `check_links.py` can never verify a gated row: a 403 from a storefront is not evidence of anything.
+- **~~Every standards storefront blocks bots.~~ Most do. SEMI does not, and the difference is worth
+  more than the rule was.** Measured 2026-07-15: ANSI webstore, Accuristech, IHS Global, and
+  GlobalSpec all answer 403 to any fetch, and TIA publishes no per standard page. So TIA-485-A and
+  TIA/EIA-232-F, the standards literally under RS-485 and RS-232, have NO citable landing page and
+  are not in the catalog. Two rows sharing a generic "buy standards" storefront URL would have told a
+  reader neither what the standard covers nor what it costs. This also means `check_links.py` can
+  never verify a gated row: a 403 from a storefront is not evidence of anything.
+  **Measured 2026-07-16, and it breaks the generalization:** `store-us.semi.org` publishes a real per
+  standard page per document, serves 190 to 300 KB of it to a plain fetch, and states the current
+  revision code, the full superseded list, both prices, and a free scope paragraph. That is why the
+  four SEMI rows exist and the two TIA rows still do not. **The lesson is about the rule, not about
+  SEMI: "every storefront blocks bots" was written from four samples and the fifth disproved it.** A
+  gated publisher is a per publisher measurement, never a class fact. Do not let this line grow back
+  into a universal.
+- **A snapshot of a STOREFRONT page is not a snapshot of a DOCUMENT, and the schema currently cannot
+  tell the two apart.** `archive_url` is mandatory because the vendor deletes the manual the week the
+  gear goes obsolete, and the snapshot is what survives. That reasoning assumes the snapshot CONTAINS
+  the document. For a sold standard it never did: the document is behind a paywall and was never
+  crawled, so what the snapshot holds is a marketing page, and a marketing page MUTATES. Measured
+  2026-07-16 on E30: the Wayback snapshot from 2025-09-09 says `SEMI E30-0725 - Current - $369.00`,
+  the live page says `SEMI E30-0526 - Current - $380.00`, and the string `0526` appears zero times in
+  the snapshot. A reader following that archive link would have found a different revision at a
+  different price and concluded the row was wrong. **This is the `verified_level` failure wearing a
+  different hat**: citing revision C while linking revision A, except the bad link is the one the
+  schema calls mandatory. The four SEMI rows were snapshotted fresh on 2026-07-16 and each snapshot
+  was then RE-FETCHED and grepped for the revision its row names, all four MATCH, so they are correct
+  as of today and they will rot the day SEMI publishes a new revision. Nothing checks that. Options,
+  none taken yet: let `check_links.py` compare the row's `revision` against its own snapshot, or mark
+  gated storefront rows as a distinct kind so their snapshot is not read as durability it does not
+  have. **Worth deciding before the plc-control rows land, because vendor literature pages are the
+  same shape and there are hundreds of them.**
 
 ## Original notes to write (`notes/`)
 
 These are the reason to visit. Everything above is a link somebody else could have found.
 
 - Which document do I actually need. A router, because finding the doc is the real problem
+- **SECS-I to HSMS: what actually breaks when a tool comes off serial.** UNWRITTEN, and it is the one
+  page here that cannot be assembled out of documents at any budget. The specs are sold, so every
+  catalog row in that group will be `GATED, UNREAD` and will carry no content at all. That is not a
+  hole in the page, it IS the page: SEMI describes a correct migration and is silent on the ways real
+  ones fail, and the author has done this repeatedly, in production, tool after tool. Nobody else can
+  write it, and nothing in this repo is worth more.
+  Its questions are recorded here OPEN, deliberately unanswered and deliberately not offered as a
+  list of candidates to agree with. A menu of plausible faults gets agreement rather than memory, and
+  agreement is a null result:
+  - What did you see first, before you knew what it was?
+  - What did you think it was, and what did it turn out to be?
+  - The phrase above is "each with its own legacy fallout." Was it a different thing every time, or
+    the same thing wearing a different hat?
+  - This is structurally Modbus RTU to Modbus TCP. Where does that analogy stop being true?
 - ~~RS485 will not talk: a decision tree~~ **WRITTEN**, `notes/rs485-will-not-talk.md`. **Its triage
   order is owed and is Keaton's to pay.** The routing is anchored to pages of the spec. The ORDER is
   reasoned from the document rather than from having chased it on a live bus, and it is labelled as a

@@ -59,17 +59,31 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--category")
+    ap.add_argument("--id", action="append",
+                    help="Snapshot only this row id. Repeatable. Narrower than --category, for when "
+                         "a handful of rows just landed and a full category run would hold the "
+                         "catalog open for twenty minutes of somebody else's snapshots.")
     ap.add_argument("--timeout", type=int, default=90)
     args = ap.parse_args()
 
     with CATALOG.open(newline="", encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
 
+    # An --id that matches no row is a typo, and a typo here reads exactly like "that row is already
+    # snapshotted, nothing to do." Silence is the wrong answer to a name that does not exist.
+    if args.id:
+        known = {r["id"] for r in rows}
+        unknown = [i for i in args.id if i not in known]
+        if unknown:
+            print("  no such row id: " + ", ".join(unknown))
+            return 1
+
     targets = [
         r for r in rows
         if not (r.get("archive_url") or "").strip()
         and (r.get("url") or "").strip()
         and (not args.category or r["category"] == args.category)
+        and (not args.id or r["id"] in set(args.id))
     ]
 
     if not targets:

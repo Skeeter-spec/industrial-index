@@ -80,7 +80,7 @@ argument.
 
 <!-- BEGIN GENERATED: status. Do not hand edit. Regenerate: ./tools/build_indexes.py -->
 
-**86 documents catalogued. 6 of them have actually been opened by a human.**
+**90 documents catalogued. 6 of them have actually been opened by a human.**
 
 That second number is the honest one, and it is generated from the catalog rather than claimed in prose, so it cannot flatter itself.
 
@@ -91,8 +91,8 @@ That second number is the honest one, and it is generated from the catalog rathe
 | `FETCHED, NOT READ` | 0 |
 | `LOCATED ONLY` | 78 |
 | `CITED, UNREAD` | 0 |
-| `GATED, UNREAD` | 2 |
-| **snapshotted against link rot** | **17 of 86** |
+| `GATED, UNREAD` | 6 |
+| **snapshotted against link rot** | **21 of 90** |
 | **mirrored locally (license cleared)** | **0** |
 
 By domain:
@@ -103,7 +103,7 @@ By domain:
 | [maintenance](domains/maintenance/INDEX.md) | _none yet_ |
 | [plc-control](domains/plc-control/INDEX.md) | 17 |
 | [power-distribution](domains/power-distribution/INDEX.md) | 17 |
-| [protocols](domains/protocols/INDEX.md) | 28 |
+| [protocols](domains/protocols/INDEX.md) | 32 |
 | [robotics-motion](domains/robotics-motion/INDEX.md) | _none yet_ |
 | [safety](domains/safety/INDEX.md) | 9 |
 | [silicon](domains/silicon/INDEX.md) | 3 |
