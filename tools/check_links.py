@@ -36,9 +36,26 @@ CATALOG = ROOT / "catalog" / "catalog.csv"
 
 UA = "industrial-index link checker (+https://github.com/Skeeter-spec/industrial-index)"
 
+# THREE OUTCOMES, NOT TWO. A checker that can fail to observe MUST be able to say so.
+#
+# The whole point: DEAD is a claim about the DOCUMENT. UNKNOWN is a claim about the
+# CHECK. Collapsing them lets a checker's own failure masquerade as a finding about
+# the world, and this repo's finding is always "delete the row."
+LIVE = "live"
+DEAD = "dead"
+UNKNOWN = "unknown"
+
+# The server refused us. It did not say the document is gone.
+BLOCKING_STATUSES = {401, 403, 405, 429}
+
 
 def reachable(url, timeout):
-    """True if the URL serves something. A HEAD is only ever believed when it SUCCEEDS.
+    """Return (LIVE|DEAD|UNKNOWN, code). A HEAD is only ever believed when it SUCCEEDS.
+
+    ⚠ THIS RETURNS THREE STATES, NOT A BOOL. It used to return True/False and that was
+    a bug of exactly the kind the rest of this docstring warns about: a bool cannot say
+    "I could not tell", so every failure to observe became a claim that the document is
+    dead. See the GET handler below for the measured case.
 
     MEASURED 2026-07-15, and this function is written the way it is because of it.
 
@@ -61,18 +78,34 @@ def reachable(url, timeout):
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             if 200 <= resp.status < 400:
-                return True, resp.status
+                return LIVE, resp.status
     except Exception:
         pass  # Proves nothing. Fall through to GET, which is the measurement that counts.
 
     req = urllib.request.Request(url, method="GET", headers={"User-Agent": UA})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return 200 <= resp.status < 400, resp.status
+            return (LIVE, resp.status) if 200 <= resp.status < 400 else (DEAD, resp.status)
     except urllib.error.HTTPError as e:
-        return False, e.code
+        # A STATUS IS NOT ALWAYS A VERDICT ABOUT THE DOCUMENT.
+        # 401/403/405/429 mean the SERVER REFUSED US. They say nothing about whether
+        # the document exists, and treating them as DEAD is the same false-LOST this
+        # function's docstring already describes one layer up.
+        if e.code in BLOCKING_STATUSES:
+            return UNKNOWN, e.code
+        return DEAD, e.code
     except Exception as e:
-        return False, type(e).__name__
+        # NO HTTP RESPONSE AT ALL: timeout, connection reset, DNS failure, TLS stall.
+        # This is the ABSENCE of evidence, not evidence of absence, and it MUST NOT
+        # collapse into DEAD.
+        #
+        # MEASURED 2026-07-16 with the real url, not a synthetic fixture:
+        #   eaton.com/content/dam/.../bus-ele-tech-lib-short-circuit-current-calculations.pdf
+        # completes the TLS handshake and then hangs. Three independent research agents
+        # hit it the same way. Before this change it returned live=False -> bucket LOST
+        # -> "Too late. Find another copy or drop the row." That is a live Eaton handbook
+        # a human would have deleted on this report's say-so.
+        return UNKNOWN, type(e).__name__
 
 
 def main():
@@ -86,35 +119,49 @@ def main():
     if args.category:
         rows = [r for r in rows if r["category"] == args.category]
 
-    buckets = {"OK": [], "ROTTED": [], "EXPOSED": [], "LOST": []}
+    buckets = {"OK": [], "ROTTED": [], "EXPOSED": [], "LOST": [], "UNCHECKED": []}
 
     for r in rows:
         url = (r.get("url") or "").strip()
         snap = (r.get("archive_url") or "").strip()
-        live, code = reachable(url, args.timeout) if url else (False, "no url")
+        status, code = reachable(url, args.timeout) if url else (DEAD, "no url")
         has_snap = bool(snap)
-        if live and has_snap:
+        if status == UNKNOWN:
+            # We never reached the server. We know NOTHING about this document, so we
+            # say nothing about it. Reporting it as LOST would be the checker's own
+            # failure wearing a finding's clothes.
+            state = "UNCHECKED"
+        elif status == LIVE and has_snap:
             state = "OK"
-        elif not live and has_snap:
+        elif status == DEAD and has_snap:
             state = "ROTTED"
-        elif live and not has_snap:
+        elif status == LIVE and not has_snap:
             state = "EXPOSED"
         else:
             state = "LOST"
         buckets[state].append((r["id"], code))
-        print(f"  {state:<8} {r['id']}  [{code}]")
+        print(f"  {state:<9} {r['id']}  [{code}]")
 
     print()
-    print(f"  OK      {len(buckets['OK']):>4}  live and snapshotted")
-    print(f"  ROTTED  {len(buckets['ROTTED']):>4}  canonical dead, snapshot holds. Row still works.")
-    print(f"  EXPOSED {len(buckets['EXPOSED']):>4}  live but unsnapshotted. Run ./tools/archive.py.")
-    print(f"  LOST    {len(buckets['LOST']):>4}  dead and unsnapshotted. Re source or drop.")
+    print(f"  OK        {len(buckets['OK']):>4}  live and snapshotted")
+    print(f"  ROTTED    {len(buckets['ROTTED']):>4}  canonical dead, snapshot holds. Row still works.")
+    print(f"  EXPOSED   {len(buckets['EXPOSED']):>4}  live but unsnapshotted. Run ./tools/archive.py.")
+    print(f"  LOST      {len(buckets['LOST']):>4}  dead and unsnapshotted. Re source or drop.")
+    print(f"  UNCHECKED {len(buckets['UNCHECKED']):>4}  NOT A VERDICT. The check failed, not the row.")
 
     if buckets["LOST"]:
         print()
         print("  LOST rows are the only ones that need a human:")
         for rid, code in buckets["LOST"]:
             print(f"    .. {rid} [{code}]")
+
+    if buckets["UNCHECKED"]:
+        print()
+        print("  UNCHECKED: the server refused us or never answered. This says NOTHING about")
+        print("  whether the document exists. DO NOT DROP THESE ROWS. Open one in a browser.")
+        print("  (Known: eaton.com hangs after the TLS handshake; se.com serves a reCAPTCHA.)")
+        for rid, code in buckets["UNCHECKED"]:
+            print(f"    ?? {rid} [{code}]")
     return 0
 
 

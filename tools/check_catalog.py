@@ -173,6 +173,25 @@ def main():
         if level == "LOCATED ONLY":
             unfinished.append(f"{rid}: content still unverified")
 
+        # A LEGAL claim resting on a document nobody opened. Visible, never fatal.
+        #
+        # MEASURED 2026-07-16, and this check is named after the row that taught it. The RP2040
+        # datasheet row said `license=CC BY-SA 4.0, redistributable=yes` at LOCATED ONLY. The
+        # schema already required that `yes` name actual terms, and it did name actual terms, and
+        # they were THE WRONG TERMS: the colophon says CC BY-ND, NoDerivatives, the opposite
+        # obligation. Naming a licence is not reading one. Nothing caught it, because the rule
+        # tested the SHAPE of the value and never asked whether anyone had looked.
+        #
+        # It is deliberately not fatal. "public domain (US government work)" is usually right, and
+        # a gate that goes red on 13 probably-fine rows teaches that red means nothing here. But it
+        # is also not free: TM 5-811-14 is a public domain Army document EXCEPT the asterisked
+        # paragraph reprinting IEEE 242 by permission. A licence is not uniform across a document,
+        # so "the publisher is the US government" is a hypothesis about a file nobody has opened.
+        if redist == "yes" and level in ("LOCATED ONLY", "CITED, UNREAD", "GATED, UNREAD"):
+            unfinished.append(
+                f"{rid}: claims redistributable=yes at '{level}' — a legal claim on a document "
+                f"nobody has opened")
+
         # The snapshot is of somewhere else. Visible, never fatal, and the distinction matters.
         #
         # MEASURED 2026-07-15. archive.py asks Wayback to save the row's url, and Wayback follows
