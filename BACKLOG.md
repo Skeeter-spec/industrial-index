@@ -39,7 +39,7 @@ visible, and that is exactly the condition where a catalog quietly fills up with
 | Order | Domain | Why here |
 |---|---|---|
 | 1 | `protocols` | Modbus, EtherNet/IP, and the serial layer are free, canonical, short, and checkable. Best value per hour in the whole list, and it is where the tribal knowledge is worst. |
-| 2 | `power-distribution` | Nobody else's automation doc repo carries switchgear, UPS, transfer gear, and protective relays at all, which is the differentiator. Note what that does and does not say: the documents are catalogued here because nobody else catalogues them, at whatever level each was actually read. The author's own ground truth covers the relay and generator side of that list, not all of it, and the level column is where the difference shows. |
+| 2 | `power-distribution` | Nobody else's automation doc repo carries switchgear, UPS, transfer gear, and protective relays at all, which is the differentiator. Note what that does and does not say: these are catalogued because nobody else catalogues them, at whatever level each was actually read. What the author can check firsthand is narrower than the list, and the level column is where the difference shows. |
 | 3 | `plc-control` | The largest and most searched. Also the most link rotted, so the snapshot machinery earns its keep. |
 | 4 | `standards` | Mostly `CITED, UNREAD` and `GATED, UNREAD` rows plus scope notes. Low effort, high value, because "which standard even governs this" is the actual question people have. |
 | 5+ | everything else | Only once the first four are worth linking to. |
