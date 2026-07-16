@@ -52,22 +52,6 @@ delay** is the delay the master observes after a broadcast, so that slaves can f
 before the next request. A word that is present and means something else does not announce itself the
 way a word with zero hits does. If you want the character gap, it is t1.5 and t3.5 on p.13.
 
-## The first move is physical, before any of this
-
-Wiring, D0 and D1 polarity, continuity. Confirm the bus is actually landed the way you think it is
-before you believe a single thing below.
-
-That is not a stylistic preference and it is not reasoned from the spec. It is what the person who
-maintains this repo reaches for first, having chased **every one** of the four failure classes on
-this page down on live buses: idle bias, termination and reflections, grounding and ground loops,
-and baud and framing mismatch. All four. The order starts here because in practice this is where it
-starts.
-
-The reason it earns the top slot even though it is the least interesting: every other section on
-this page assumes the bus is wired correctly. Polarization, termination, and timing are all
-questions about a working circuit. Ask them of a circuit that is not landed and every answer you get
-is noise, expensively.
-
 ## Route by symptom
 
 Pick the row that matches what you are actually seeing. The point of splitting these is that they
@@ -133,28 +117,33 @@ those. It is two correct implementations of one paragraph.
 
 **If the bus works at 9600 and fails at 38400, read that remark before you buy cable.**
 
-## What is solid here and what is still owed
+## What this page is missing, and it is the important part
 
-Worth being exact about, because a page like this is usually vague in both directions at once.
+The routing above is anchored: every claim on it traces to a page of the spec that was read at
+modbus.org, not at a mirror and not from memory.
 
-**Solid.** Every routing claim traces to a page of the spec that was read at modbus.org, not at a
-mirror and not from memory. And the opening move, physical before anything else, is field practice
-rather than reasoning: it is what this repo's author reaches for first, and he has personally chased
-all four of the failure classes above on live buses.
+**The triage order is not, and this section exists to keep saying so.** It is reasoned from the
+document, not from having been wrong about it in a plant at 2am, and that is exactly the ingredient
+the `notes/` standing rule asks for and the only one reading cannot supply. A real order comes from
+what actually turns out to be the culprit and how often.
 
-**Still owed.** Knowing all four failures and knowing their *frequency* are different things, and only
-the second one finishes a triage order. After the physical check, the sequence below is still the
-document's logic rather than a ranking earned by how often each one is actually the culprit.
+This page was briefly published with an order claimed as practiced. It was not. The claim came from
+answering a multiple choice question rather than from an account of what happened, which is a way of
+manufacturing agreement and not a way of learning anything. It has been withdrawn. That failure is
+worth leaving on the record here, because it is the same failure the `verified_level` column exists
+to catch: a confident statement whose evidence nobody looked at.
 
-- **What is the real order after the physical check?** If polarization is the answer four times in
-  five, it belongs immediately after it, not in the middle of a table.
+Still open, and stated rather than guessed at:
+
+- **What is the real order?** If polarization is the answer four times in five, it belongs at the top
+  and not in the middle of a table.
 - **What fails that the spec never describes?** The spec documents a correct bus. It does not
-  document the ways real ones break, and that gap is where a note like this earns its keep.
-- **Which vendors sit on which side of the 19200 split?** Nobody publishes this. It stays open here
-  rather than being guessed at, because a fabricated interoperability table would be worse than the
-  silence it replaced.
+  document the ways real ones break, and that gap is where a page like this earns its keep.
+- **Which vendors sit on which side of the 19200 split?** Nobody publishes this. It stays open rather
+  than invented, because a fabricated interoperability table would be worse than the silence it
+  replaced.
 
-Corrections from anyone who has chased this are worth more than the page is. Open an issue.
+Corrections from anyone who has actually chased this are worth more than the page is. Open an issue.
 
 ## Sources
 
@@ -162,9 +151,8 @@ Corrections from anyone who has chased this are worth more than the page is. Ope
 |---|---|
 | `modbus-org-serial-line-v1-02` | `TRACED`. Sections 2.2, 2.5.1, 2.5.1.1, 2.5.1.2, 3.3.2, 3.4.1 to 3.4.6 read at modbus.org 2026-07-15. |
 
-The triage order's opening move is field experience, stated as such and not dressed up as a citation.
-The distinction is the point: this repo says how far each thing was checked, and that applies to the
-notes as much as to the catalog rows.
+Nothing on this page is reproduced from that document. It is a map of it. The spec is free, it is 44
+pages, and if you are debugging one of these buses you should be reading it rather than this.
 
 Nothing on this page is reproduced from that document. It is a map of it. The spec is free, it is 44
 pages, and if you are debugging one of these buses you should be reading it rather than this.
