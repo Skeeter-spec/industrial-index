@@ -44,6 +44,13 @@ That is what goes here, and it is the part that cannot be scraped, generated, or
   the words that spec does not use for the things it covers.
 - **[Modbus TCP: the unit id is not the slave id, except when it is](modbus-tcp-unit-id.md)**. The
   field the spec repurposes rather than removes.
+- **[What arrived, not what you did](what-arrived-not-what-you-did.md)**. The second exception the
+  method page concedes, and the one it never names. Deviation needs a record of healthy taken before
+  you need it, and a new install has none, because nothing has ever run. Worse: it does not hand you
+  nothing, it hands you a fiction. Somebody else's validation, performed at a facility you were not
+  standing in, arriving stamped complete. A false baseline draws the search box, and the fault is
+  outside the box. Includes the four paths an undocumented modification defeats by construction, one
+  of which fails by producing a correct measurement.
 - **[Test points from the outside, when the inside will not talk](test-points-from-the-outside.md)**.
   The companion to the method page, and an attack on the one exception that page concedes: on a sealed
   legacy machine with no test points and a controller that will not talk, you are supposed to be back

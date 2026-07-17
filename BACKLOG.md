@@ -357,6 +357,26 @@ from a document, a search, or a backlog entry. It came from asking for a story a
 is the only technique on this page that has ever produced a page, and it produced one that no amount
 of reading would have found.
 
+**It has now produced a second, and the way it happened is the lesson.** 2026-07-17: the author was
+asked for a nuisance trip story, one of the questions below. He answered a different question, and the
+answer was `notes/what-arrived-not-what-you-did.md`: weeks lost on a new tool install to an improvised,
+undocumented device that arrived misconfigured and hidden, under an inherited assumption that the tool
+had passed testing at the previous build facility.
+
+Three things worth keeping from that:
+
+- **Commissioning was recorded here as the repo's emptiest domain, and it was measured at ZERO
+  documents out of 108 rows on the same day.** The conclusion drawn was that this was a sourcing gap.
+  It was not. The author had the material the whole time. He mentioned building out a new install the
+  way a person mentions the weather. **An empty domain is not evidence that the author lacks the
+  domain. Measure the catalog, never infer the person from it.**
+- **He was asked one question and answered a better one.** The instinct to steer him back to the
+  question that was asked would have destroyed the page. The value was in the part he volunteered.
+- **The story arrives labelled as smaller than it is, every time.** "A switch was in the wrong place"
+  is how a person describes weeks of their life when they blame themselves for it.
+
+⇒ The remaining questions below stay open and stay unanswered, and stay questions.
+
 So the next pages are recorded here as **questions to ask the author**, not as topics to research.
 Deliberately open, deliberately not a list of candidate answers to agree with. **A menu gets agreement
 instead of memory, and agreement is a null result.** This is not a style preference: a menu is exactly
