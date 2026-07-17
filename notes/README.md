@@ -44,6 +44,13 @@ That is what goes here, and it is the part that cannot be scraped, generated, or
   the words that spec does not use for the things it covers.
 - **[Modbus TCP: the unit id is not the slave id, except when it is](modbus-tcp-unit-id.md)**. The
   field the spec repurposes rather than removes.
+- **[Test points from the outside, when the inside will not talk](test-points-from-the-outside.md)**.
+  The companion to the method page, and an attack on the one exception that page concedes: on a sealed
+  legacy machine with no test points and a controller that will not talk, you are supposed to be back
+  to the symptom table. You are not. The process instruments are test points nobody designed as test
+  points, they report in current and voltage below the digital layer, and they never needed the
+  controller's permission. Includes the two preconditions that decide whether the record you build is
+  a finding or a fiction.
 
 ## Standing rule
 
