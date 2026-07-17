@@ -37,7 +37,8 @@ On power distribution it is narrower and worth stating exactly, because a vague 
 power chain" is worth nothing to a reader deciding whether to trust a row. Protective relays: set,
 tested, replaced, and nuisance trips chased back to a cause. Generators, of two unrelated kinds: the
 RF and bias generators that deliver power into a plasma chamber, and standby sets tied in on the
-building side. Twenty kilowatts of delivery into a plasma load, with the EMI loop that comes with it.
+building side. Forty kilowatts of delivery into a plasma load, master and slave paired into a single
+chamber, with the EMI loop that comes with it.
 And acceptance testing as a method rather than a certificate: measure the gear, compare against the
 published values, find what explains the deviation, recommend. NFPA 70E training through a DOL
 apprenticeship. Lockout tagout training, recertified every six months through 2025.
@@ -389,15 +390,26 @@ certain to catch it.
   earned, and its first entry is reportedly a fault no specification describes.
   - What is actually first, and how often is it first?
   - What fails on a 232 link that the spec never mentions, because the spec documents a correct one?
-- **Twenty kilowatts into a plasma load, and the EMI that comes with it.** Unusual, real, and nobody
-  writes it down.
+- **Forty kilowatts into a plasma load, and the EMI that comes with it.** Unusual, real, and nobody
+  writes it down. **The number was wrong on this page until 2026-07-17, and wrong in the direction
+  that flatters nobody: it read twenty, which is one generator, when the delivery is a master and
+  slave pair into one chamber. The author said forty from memory and was right. No document
+  contradicts it and every document read supports its reachability.**
   - What coupled into what, and how did you find out?
 
 ### Mechanical, no story required
 
 - **Thirty nine rows are still exposed.** `./tools/archive.py` stopped on a Wayback 429 on 2026-07-16
-  after writing nineteen. Rerun once the limit clears. Two rows returned no snapshot at all and were
-  left empty on purpose.
+  after writing nineteen. Two rows returned no snapshot at all and were left empty on purpose.
+  **Retried 2026-07-17 and 429'd again on the second submission, writing nothing. The limit is longer
+  than a day, so the next rerun should be spaced accordingly rather than attempted on sight.**
+  **A note on how that retry read, because it is the failure this repo exists to refuse.** The run
+  exited zero, and zero meant "I asked, I was refused, I changed nothing," not "done." The tool was
+  right: it stopped on the 429, refused to guess a snapshot for the row that returned none, and left
+  the catalog untouched. **The probe that authorised the retry was the part that lied.** A `curl` at
+  the save endpoint answered 302 and was read as "the limit has cleared," when a 302 there only means
+  the endpoint redirects. It never tested the thing being claimed. **A probe that cannot fail the way
+  the real call fails is not evidence, and this one passed while the real call was still refused.**
 - Startup and commissioning checklists
 - Panel build conventions, wire color and numbering schemes
 - Retrofit playbooks: PLC-5 to CompactLogix, and friends
