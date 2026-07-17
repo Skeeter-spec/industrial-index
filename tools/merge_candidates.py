@@ -117,6 +117,57 @@ def slug(s):
     return re.sub(r"-+", "-", s).strip("-")
 
 
+# The three fields make_id builds a permanent id out of.
+KEY_FIELDS = ("vendor", "doc_number", "revision")
+
+
+def prose_in_key(s):
+    """Why this field reads as a sentence rather than a name. Empty list means it is fine.
+
+    THE ID IS FOREVER. The schema says an id is never reused and never renumbered, and that other
+    files cite it. So whatever sits in vendor/doc_number/revision is not just a value, it is a
+    permanent key, and a candidate will hand you a biography.
+
+    MEASURED 2026-07-16 on one real batch of 27 agent proposed candidates: ELEVEN would have minted
+    an id over 60 characters, silently, the longest at 137:
+
+        gather-system-technology-gathertech-taiwan-gst-sgm-ref-2026-template-project-code-
+        explicitly-stated-to-be-illustrative-not-a-real-project
+
+    That is a whole caveat welded into a key. And it is NOT the worker being sloppy: `vendor` says
+    "Publisher", and for a one person open source project the publisher genuinely IS a person, so it
+    answered exactly what it was asked. The field is what needs an opinion, not the agent.
+
+    WHY THIS IS NOT A LENGTH CHECK, which was the first idea and was wrong. Ids that are long are
+    not the problem: the honest fallback to a title mints 83 to 90 characters routinely and those
+    rows are good. The longest CLEAN vendor in this catalog is "University of Michigan Modbus/TCP
+    Conformance Test Laboratory" at 61, which is simply a long true name. A length rule punishes it
+    and lets a short caveat through. The signal is a PARENTHETICAL CLAUSE, every time.
+
+    Tuned against real data rather than against itself, which is the only reason to believe it:
+      - fires on 17 of 27 (62%) of that raw agent batch
+      - fires on 9 of 64 (14%) of the vendors already in this catalog, and reading those nine, they
+        are the SAME disease already shipped, not false positives:
+        "Texas Instruments (originally National Semiconductor, AN-1057)".
+    A check that fires on nearly everything is the suspect rather than the finding; 14 against 62 is
+    a discriminating signal, so it stays.
+
+    `(open source)` deliberately does NOT fire. It is a qualifier, it is this catalog's own
+    convention (`pymodbus project (open source)`), and a rule that broke it would be tuned out
+    within a batch.
+    """
+    out = []
+    for m in re.finditer(r"\(([^)]*)\)", s or ""):
+        inner = m.group(1)
+        if "," in inner:
+            out.append(f"a clause in parentheses: ({inner[:44]})")
+        elif len(inner.split()) >= 3:
+            out.append(f"a phrase in parentheses: ({inner[:44]})")
+    if ";" in (s or ""):
+        out.append("a semicolon, which makes it a sentence rather than a name")
+    return out
+
+
 def make_id(c, taken):
     """vendor-docnumber-rev, per the schema. Falls back to the title when there is no number."""
     vendor = slug(c.get("vendor"))
@@ -190,6 +241,17 @@ def main():
             key = re.sub(r"^https?://", "", url.rstrip("/").lower())
             if key in seen_urls:
                 why = "already in the catalog"
+            else:
+                # Refuse BEFORE minting, because the id is the one thing here that cannot be taken
+                # back. Every other bad field is one edit away from correct; a shipped id is cited
+                # by other files and the schema forbids renumbering it. So this is the one check
+                # that has to be a door rather than a warning printed next to the damage.
+                for f in KEY_FIELDS:
+                    marks = prose_in_key(c.get(f))
+                    if marks:
+                        why = (f"{f} is prose, and the id is built from it: {marks[0]}. "
+                               f"Put the story in notes and leave a NAME here.")
+                        break
 
         if why:
             rejects.append((c, why, ""))
