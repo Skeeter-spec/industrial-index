@@ -19,10 +19,19 @@ than against other documents.
 On protocols, that ground truth is direct. Electronics prototype development and board level
 characterization: pulling communication boards off tools and characterizing components and signal
 interactions against a known good baseline, then tracing deviations back to configuration and
-physical damage. RS-232 point to point host communications. Modbus TCP run in the field. And a
-SECS-I to HSMS migration across many tools, each with its own legacy fallout, which is an industrial
-protocol moved off legacy serial onto TCP/IP, repeatedly, in production. That last one is
-structurally the same transition as Modbus RTU to Modbus TCP, which is why this repo starts here.
+physical damage. RS-232 point to point host communications. Modbus TCP run in the field. And reading
+a process directly off its instruments, in current and voltage, on a platform whose controller had no
+Ethernet to offer and little to say, which is written up in
+[Test points from the outside](notes/test-points-from-the-outside.md) and is the anchor this domain
+actually rests on.
+
+**A correction, kept in public because the repo is worth less without it.** This paragraph used to
+anchor on a SECS-I to HSMS migration across many tools, called structurally the same transition as
+Modbus RTU to Modbus TCP. The migration happened and the author did it. The mechanism was installing
+a vendor's upgrade board. Nothing in the old sentence was false and the framing was still wrong,
+because it invited a reader to hear protocol engineering and the honest answer is "we swapped the
+board." **That gap, between what a claim sets up and what it pays off, is the thing this catalog
+refuses on every row and had not yet refused in its own thesis.**
 
 On power distribution it is narrower and worth stating exactly, because a vague claim to "the whole
 power chain" is worth nothing to a reader deciding whether to trust a row. Protective relays: set,
@@ -50,10 +59,12 @@ visible, and that is exactly the condition where a catalog quietly fills up with
 
 - Modbus RTU and TCP: application protocol, serial line guide, TCP implementation guide **(seeded)**
 - SEMI E4 (SECS-I), E5 (SECS-II), E30 (GEM), E37 (HSMS). Sold by SEMI, so expect `GATED, UNREAD` and
-  `CITED, UNREAD` rows: the value here is the note, not the links. It sits second because the author
-  moved production tools off SECS-I serial onto HSMS over TCP/IP, tool after tool, each with its own
-  legacy fallout. That is structurally the same transition as Modbus RTU to Modbus TCP, and the two
-  together are the ground truth the whole protocols domain is anchored to.
+  `CITED, UNREAD` rows: the value here is the note, not the links. It sits second because the free
+  half is real and nobody indexes it: open source implementations and vendor explainers are readable
+  evidence of a gated standard's observable behaviour, and roughly twenty such rows are catalogued.
+  **It does not sit second because the author's migration off SECS-I was hard. It was a board swap,
+  and that claim is retired below.** The author's SECS/GEM ground truth is narrower and real: chasing
+  SECS/GEM communication faults while working on analytics for tool behaviour.
 - EtherNet/IP and CIP, CIP Safety, CIP Motion (ODVA, sold, cite by number)
 - PROFIBUS DP and PROFINET, PROFIsafe (PI)
 - EtherCAT, EtherCAT slave controller documentation (ETG)
@@ -289,20 +300,32 @@ Not changes. Questions, recorded where they were noticed so the next person does
 These are the reason to visit. Everything above is a link somebody else could have found.
 
 - Which document do I actually need. A router, because finding the doc is the real problem
-- **SECS-I to HSMS: what actually breaks when a tool comes off serial.** UNWRITTEN, and it is the one
-  page here that cannot be assembled out of documents at any budget. The specs are sold, so every
-  catalog row in that group will be `GATED, UNREAD` and will carry no content at all. That is not a
-  hole in the page, it IS the page: SEMI describes a correct migration and is silent on the ways real
-  ones fail, and the author has done this repeatedly, in production, tool after tool. Nobody else can
-  write it, and nothing in this repo is worth more.
-  Its questions are recorded here OPEN, deliberately unanswered and deliberately not offered as a
-  list of candidates to agree with. A menu of plausible faults gets agreement rather than memory, and
-  agreement is a null result:
-  - What did you see first, before you knew what it was?
-  - What did you think it was, and what did it turn out to be?
-  - The phrase above is "each with its own legacy fallout." Was it a different thing every time, or
-    the same thing wearing a different hat?
-  - This is structurally Modbus RTU to Modbus TCP. Where does that analogy stop being true?
+- ~~**SECS-I to HSMS: what actually breaks when a tool comes off serial.** Nobody else can write it,
+  and nothing in this repo is worth more.~~ **RETIRED 2026-07-16, AND HOW IT DIED IS THE METHOD
+  WORKING.** This entry sat here as the crown jewel on a premise that was never checked with the
+  author. The open questions above it were finally asked, out loud, as questions rather than as a
+  menu. The answer retired the page in fourteen words: *"the rs232 to hsms was childs play in
+  comparison. that was a replacement of a board... tools for applied materials needed a new 'VITA' PC
+  and control board to interact with HSMS. pre-VITA was all rs-232."*
+  So the migration is real and was executed repeatedly, and its mechanism was a **vendor prescribed
+  hardware upgrade**. There is no hard won page in it, because it was not hard won. **A true fact
+  positioned as a deep one is the failure this whole repo exists to refuse, and it was sitting in the
+  repo's own thesis.** Asking got a better answer than assuming, which is the entire argument of
+  `diagnose-by-deviation.md` pointed at a backlog instead of a board.
+  What survives is smaller and still worth writing: **a router into the free half of SECS/GEM.** The
+  standards are sold, but ~20 free rows now exist in the catalog (open source implementations, vendor
+  explainers), and an implementation is readable evidence of a gated standard's observable behaviour.
+  Nobody indexes that. It is a good page. It is not the best page here.
+- ~~The best page here~~ **WRITTEN**, `notes/test-points-from-the-outside.md`. The question that found
+  it was not "what do you know about protocols," it was "tell me the story of the worst one." The
+  author's hardest won communications work was never the protocol at all: Applied Materials P5000
+  platforms, an ask to reach the supervisory layer, and no Ethernet on any board on any control panel.
+  The route taken was to stop asking the controller and read the process peripherals directly, in
+  current and voltage, below the digital layer. It is the escape from the one exception
+  `diagnose-by-deviation.md` concedes, and its own method page had no case study until now.
+  **Retained as a standing lesson: this page did not exist in any backlog, any resume, or any notes
+  file. It surfaced only because someone asked for a narrative instead of a fact.** Whatever else is
+  buried is buried the same way, and will not be found by reading this file harder.
 - ~~RS485 will not talk: a decision tree~~ **WRITTEN**, `notes/rs485-will-not-talk.md`. **Its triage
   order is owed and is Keaton's to pay.** The routing is anchored to pages of the spec. The ORDER is
   reasoned from the document rather than from having chased it on a live bus, and it is labelled as a
