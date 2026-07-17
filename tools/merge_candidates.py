@@ -339,6 +339,19 @@ def main():
             "verified_date": today,
             "notes": note,
         })
+        # ADDING A COLUMN TO THE SCHEMA DOES NOT ADD IT TO THE WRITERS, and csv.DictWriter will not
+        # tell you: a MISSING key is filled from restval (default "") and writerow returns normally.
+        # extrasaction='raise' guards EXTRA keys only, so the direction that silently corrupts the
+        # file is the unguarded one. That is exactly how license_basis shipped empty from here into
+        # a column whose schema says empty is not allowed, and nothing raised; it only failed safe
+        # because the gate coerced "" on READ. A value that is right because a reader repairs it is
+        # inferred, not recorded.
+        # One line, fails loudly, and it makes the NEXT column impossible to forget.
+        missing = set(COLUMNS) - set(landed[-1])
+        extra = set(landed[-1]) - set(COLUMNS)
+        assert not (missing or extra), (
+            f"{rid}: row does not match the schema. missing={sorted(missing)} extra={sorted(extra)}. "
+            f"A column was added to COLUMNS and not to the row built above.")
         print(f"  land    {title[:52]:52s} [{code}] {rid}")
 
     print()
