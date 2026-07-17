@@ -341,6 +341,62 @@ These are the reason to visit. Everything above is a link somebody else could ha
 - Profinet drops: a decision tree
 - VFD faults on acceleration: a decision tree
 - Vendor fault code indexes with diagnosis notes
+
+### The gap that matters, stated plainly
+
+**Four notes exist. None of them is in a power engineer's domain.** They are protocols, method, and
+instrumentation. `power-distribution` carries seventeen catalogued rows and zero original pages, which
+means a reader who works on power arrives, finds a link list anyone could have assembled, and leaves.
+The catalog is not the product and never was. On the one domain most likely to be read by the people
+this repo would most like to reach, there is currently nothing to read.
+
+**The bottleneck is not sourcing. It is asking.** `notes/test-points-from-the-outside.md` did not come
+from a document, a search, or a backlog entry. It came from asking for a story and shutting up. That
+is the only technique on this page that has ever produced a page, and it produced one that no amount
+of reading would have found.
+
+So the next pages are recorded here as **questions to ask the author**, not as topics to research.
+Deliberately open, deliberately not a list of candidate answers to agree with. **A menu gets agreement
+instead of memory, and agreement is a null result.** This is not a style preference: a menu is exactly
+how three capabilities the author does not have were once written into this file as fact.
+
+### The boundary on this domain, which is narrower than the domain
+
+Stated because the value of every page below depends on it. The author's power ground truth is
+protective relays, generators of two unrelated kinds, acceptance testing as a method, and NFPA 70E and
+lockout tagout training through a DOL apprenticeship. **It does not include switchgear, transfer
+switches, or a NETA certification, and no page here may imply otherwise.** A page written past the
+boundary is worth less than no page, because the one reader qualified to enjoy it is the one reader
+certain to catch it.
+
+### Candidate pages, as questions
+
+- **Nuisance trips, chased back to a cause.** Likely the highest value page this repo could publish
+  for a power reader, and directly adjacent to the author's confirmed work. Relay literature documents
+  settings and curves. It is silent on why a correctly set relay trips anyway, which is the entire job.
+  - Tell the story of one. Which relay, what tripped, and what did you think it was first?
+  - What did you have to go measure before the trip made sense?
+  - What was the cause, the time it was not what anyone expected?
+- **Acceptance testing as a method rather than a certificate.** Measure the gear, compare against
+  published values, find what explains the deviation, recommend. That is `diagnose-by-deviation.md`
+  aimed at power apparatus, and the author does it without holding the certificate the industry treats
+  as the price of entry. **That is the page, and it must never dress itself as the certificate.**
+  - Walk through one piece of gear, start to finish. What did you measure and what did you compare to?
+  - What did you find that the published values did not explain?
+- **RS-232 point to point will not talk.** The honest counterpart to `rs485-will-not-talk.md`, whose
+  triage order is reasoned rather than earned and is labelled as such. The author's 232 order **is**
+  earned, and its first entry is reportedly a fault no specification describes.
+  - What is actually first, and how often is it first?
+  - What fails on a 232 link that the spec never mentions, because the spec documents a correct one?
+- **Twenty kilowatts into a plasma load, and the EMI that comes with it.** Unusual, real, and nobody
+  writes it down.
+  - What coupled into what, and how did you find out?
+
+### Mechanical, no story required
+
+- **Thirty nine rows are still exposed.** `./tools/archive.py` stopped on a Wayback 429 on 2026-07-16
+  after writing nineteen. Rerun once the limit clears. Two rows returned no snapshot at all and were
+  left empty on purpose.
 - Startup and commissioning checklists
 - Panel build conventions, wire color and numbering schemes
 - Retrofit playbooks: PLC-5 to CompactLogix, and friends
