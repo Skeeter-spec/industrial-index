@@ -171,9 +171,9 @@ the units cannot be told apart with certainty, fix that first or do not start.
 
 ## Provenance
 
-Written from this repo author's practice: an ask to bring Applied Materials P5000 platforms onto a
-fab's supervisory layer, on which Ethernet was not an option because no board on any control panel
-had it, and whose own controller was in any case very limited in usability.
+Written from this repo author's practice: an ask to bring a bank of legacy plasma process tools onto
+a fab's supervisory layer, on which Ethernet was not an option because no board on any control panel
+had it, and whose own controllers were in any case very limited in usability.
 
 The route taken was outside in. Signals were read from the process peripherals instead: vacuum pumps,
 lamps, chuck temperature, showerhead pressure, chamber pressure, mass flow controllers. What those

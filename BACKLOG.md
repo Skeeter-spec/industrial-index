@@ -318,8 +318,9 @@ These are the reason to visit. Everything above is a link somebody else could ha
   Nobody indexes that. It is a good page. It is not the best page here.
 - ~~The best page here~~ **WRITTEN**, `notes/test-points-from-the-outside.md`. The question that found
   it was not "what do you know about protocols," it was "tell me the story of the worst one." The
-  author's hardest won communications work was never the protocol at all: Applied Materials P5000
-  platforms, an ask to reach the supervisory layer, and no Ethernet on any board on any control panel.
+  author's hardest won communications work was never the protocol at all: a bank of legacy plasma
+  process tools, an ask to reach the supervisory layer, and no Ethernet on any board on any control
+  panel.
   The route taken was to stop asking the controller and read the process peripherals directly, in
   current and voltage, below the digital layer. It is the escape from the one exception
   `diagnose-by-deviation.md` concedes, and its own method page had no case study until now.
