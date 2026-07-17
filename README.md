@@ -92,7 +92,7 @@ That second number is the honest one, and it is generated from the catalog rathe
 | `LOCATED ONLY` | 96 |
 | `CITED, UNREAD` | 0 |
 | `GATED, UNREAD` | 6 |
-| **snapshotted against link rot** | **50 of 108** |
+| **snapshotted against link rot** | **69 of 108** |
 | **mirrored locally (license cleared)** | **0** |
 
 By domain:
